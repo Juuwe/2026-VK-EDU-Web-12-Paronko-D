@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+Регистрация
+ - try</title>
+
+    <link rel="icon" href="/public/static/img/favicon-32.png" type="image/png">
+
+    <link rel="stylesheet" href="/public/static/css/style.css">
+    <link rel="stylesheet" href="/public/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/static/css/bootstrap-icons.css">
+</head>
+
+<body>
+<div class="container-fluid p-0 d-flex flex-column vh-100">
+    <header class="shadow-sm py-2">
+        <div class="container-fluid">
+            <div class="row align-items-center g-2">
+
+            <div class="col-auto me-auto">
+                <a href="index.html" class="logo text-nowrap text-decoration-none">try {</a>
+            </div>
+
+            
+
+
+            <div class="col-auto ms-auto order-2 order-md-3">
+                
+                    <div class="d-flex gap-2">
+                        <a href="login.html" class="btn btn-outline-primary btn-sm px-3 rounded-3">
+                            Войти
+                        </a>
+
+                        <a href="signup.html" class="btn btn-primary btn-sm px-3 rounded-3">
+                            Регистрация
+                        </a>
+                    </div>
+                
+            </div>
+        </div>
+    </header>
+
+    <div class="row g-0 flex-grow-1">
+        <div class="col d-flex flex-column">
+
+            <main class="flex-grow-1 d-flex flex-column">
+                <div class="container-fluid bg-white flex-grow-1 d-flex flex-column p-0">
+                    
+<div class="container py-4 my-auto" style="max-width: 650px;">
+    <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-body p-3 p-md-5">
+
+            <h3 class="fw-bold mb-4 text-center">Регистрация</h3>
+
+            <p class="text-success text-center">Мы пришлем письмо с подтверждением Вам на почту!</p>
+
+            <form action="" method="post" class="needs-validation" enctype="multipart/form-data">
+
+                <div class="mb-3">
+                    <label for="login" class="form-label fw-semibold">Логин</label>
+                    <input type="text" id="username" name="login"
+                            class="form-control border-2 shadow-sm"
+                            placeholder="Придумайте логин... (длина: 3 - 32 символа)" required>
+
+                    <div class="d-flex flex-column">
+                        <small class="text-danger mt-1">Это обязательное поле</small>
+                        <small class="text-danger mt-1">Логин слишком короткий</small>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label fw-semibold">Email</label>
+                    <input type="email" id="email" name="email"
+                            class="form-control border-2 shadow-sm"
+                            placeholder="example@mail.com" required>
+
+                    <div class="d-flex flex-column">
+                        <small class="text-danger mt-1">Это обязательное поле</small>
+                        <small class="text-danger mt-1">Некорректный домен</small>
+                        <small class="text-danger mt-1">Данный email уже зарегистрирован</small>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="nick" class="form-label fw-semibold">Никнейм</label>
+                    <input type="text" id="username" name="nick"
+                            class="form-control border-2 shadow-sm"
+                            placeholder="Придумайте никнейм..." required>
+
+                    <div class="d-flex flex-column">
+                        <small class="text-danger mt-1">Это обязательное поле</small>
+                        <small class="text-danger mt-1">Данный никнейм уже занят</small>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label fw-semibold">Пароль</label>
+
+                    <div>
+                        <ul class="list-unstyled d-inline-block border border-1 border-primary border-opacity-50 rounded-4 p-1">
+                            <li class="d-flex align-items-center mb-2">
+                                <span class="bg-primary rounded-circle me-2" style="width: 8px; height: 8px;"></span>
+                                <small class="text-muted">Минимум 8 символов</small>
+                            </li>
+                            <li class="d-flex align-items-center mb-2">
+                                <span class="bg-primary rounded-circle me-2" style="width: 8px; height: 8px;"></span>
+                                <small class="text-muted">Только латинский алфавит A-Z, a-z</small>
+                            </li>
+                            <li class="d-flex align-items-center mb-2">
+                                <span class="bg-primary rounded-circle me-2" style="width: 8px; height: 8px;"></span>
+                                <small class="text-muted">Цифры 0-9</small>
+                            </li>
+                            <li class="d-flex align-items-center mb-2">
+                                <span class="bg-primary rounded-circle me-2" style="width: 8px; height: 8px;"></span>
+                                <small class="text-muted">Хотя бы одна заглавная</small>
+                            </li>
+                            <li class="d-flex align-items-center mb-0">
+                                <span class="bg-primary rounded-circle me-2" style="width: 8px; height: 8px;"></span>
+                                <small class="text-muted">Хотя бы один спец. символ</small>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <input type="password" id="password"
+                        class="form-control border-2 shadow-sm"
+                        placeholder="Пароль..." required>
+
+                    <input type="password" id="password" name="password"
+                            class="form-control border-2 shadow-sm mt-2"
+                            placeholder="Подвердите пароль..." required>
+
+                    <div class="d-flex flex-column">
+                        <small class="text-danger mt-1">Пароли не совпадают</small>
+                        <small class="text-danger mt-1">Пароль не удовлетворяет требованиям</small>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="avatar" class="form-label fw-semibold">Фото профиля</label>
+                    <input type="file" id="avatar" name="avatar"
+                            class="form-control border-2 shadow-sm"
+                            accept="image/*">
+                    <div class="form-text">Выберите изображение (JPG, PNG) (до 2 МБ)</div>
+
+                    <div class="d-flex flex-column">
+                        <small class="text-danger mt-1">Ошибка чтения файла</small>
+                        <small class="text-danger mt-1">Размер файла слишком большой</small>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <p class="text-danger mt-2 text-center"> Ошибка регистрации. Попробуйте позже </p>
+                    <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm rounded-3">
+                        Создать аккаунт
+                    </button>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <p class="small text-muted mb-0">
+                        Уже есть аккаунт? <a href="login.html" class="text-decoration-none">Войти</a>
+                    </p>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+                </div>
+            </main>
+
+        </div>
+
+        
+
+    </div>
+
+    <div class="row g-0 flex-shrink-0">
+        <footer class="py-4 bg-black">
+            <div class="container text-center text-secondary small">
+                Footer
+            </div>
+        </footer>
+    </div>
+</div>
+</body>
+</html>
