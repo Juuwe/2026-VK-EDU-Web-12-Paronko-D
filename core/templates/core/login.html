@@ -1,0 +1,46 @@
+{% extends 'core/layout/auth_base.html' %}
+
+{% block title %}
+Вход
+{% endblock %}
+
+{% block auth_title %}
+Вход
+{% endblock %}
+
+{% block form_width %}
+500px
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block form_content %}
+
+{% include 'partials/form_field.html' with field_id='auth_login' label='Логин или Email' placeholder='Придумайте логин...' %}
+
+{% include 'partials/form_field.html' with type='password' field_id='auth_password' label='Пароль' placeholder='Пароль...' %}
+
+<div class="mb-4 form-check">
+    <input type="checkbox" class="form-check-input" id="remind-checkbox">
+    <label class="form-check-label" for="remind-checkbox">Запомнить меня</label>
+</div>
+
+<div class="d-grid gap-2">
+    <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm rounded-3 flex-grow-1">
+        Войти
+    </button>
+</div>
+
+<div class="mt-4 text-center">
+    <p class="small text-muted mb-0">
+        Забыли пароль? <a href="" class="text-decoration-none">Восстановить</a>
+    </p>
+</div>
+
+<div class="mt-2 text-center">
+    <p class="small text-muted mb-0">
+        Нет аккаунта? <a href="{% url 'signup' %}" class="text-decoration-none">Регистрация</a>
+    </p>
+</div>
+{% endblock %}
