@@ -2,7 +2,7 @@
 
 ## Запуск верстки
 
-1. Склонируйте репозиторий `git clone https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D/tree/hw-1`
+1. Склонируйте репозиторий `git clone https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D.git`
 2. Переключитесь на ветку c ДЗ `git checkout hw-1`
 3. Перейдите в папку проекта *2026-VK-EDU-Web-12-Paronko-D/public*
 4. Открыть любой из файлов статической верстки можно через расширение Live Server или браузер
