@@ -1,0 +1,95 @@
+{% load static %}
+{% load sidebar %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %} - try</title>
+
+    <link rel="icon" href="{% static 'img/favicon-32.png' %}" type="image/png">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.css' %}">
+</head>
+
+<body>
+<div class="container-fluid p-0 d-flex flex-column vh-100">
+    <header class="shadow-sm py-2">
+        <div class="container-fluid">
+            <div class="row align-items-center g-2">
+
+            <div class="col-auto me-auto">
+                <a href="{% url 'index' %}" class="logo text-nowrap text-decoration-none">try {</a>
+            </div>
+
+            {% if user.is_authenticated %}
+                <div class="col-12 col-md-8 order-3 order-md-2 px-md-4">
+                    <form class="d-flex gap-2">
+                    <input type="text" class="form-control" placeholder="Искать вопрос...">
+                    <a href="{% url 'ask' %}" class="btn btn-primary">Вопрос!</a>
+                    </form>
+                </div>
+            {% endif %}
+
+
+            <div class="col-auto ms-auto order-2 order-md-3">
+                {% if user.is_authenticated %}
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="text-end d-none d-sm-block">
+                            <a href="profile.html" class="fw-bold small d-block text-dark text-decoration-none">{{ username }}</a>
+                        </div>
+                        <img src="" width="32" height="32" class="rounded-circle border">
+
+
+                        <div class="d-flex flex-column border-start ps-3" style="font-size: 13px;">
+                            <a href="settings.html" class="text-muted text-decoration-none">Настройки</a>
+                            <a href="#" class="text-danger text-decoration-none">Выйти</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm px-3 rounded-3">
+                            Войти
+                        </a>
+
+                        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm px-3 rounded-3">
+                            Регистрация
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <div class="row g-0 flex-grow-1">
+        <div class="col d-flex flex-column">
+            <main class="flex-grow-1 d-flex flex-column">
+                <div class="container-fluid bg-white flex-grow-1 d-flex flex-column p-0">
+                    {% with btn_active="btn-primary" btn_inactive="btn-light bg-transparent border-0" %}
+
+                    {% block content %}
+                    {% endblock %}
+
+                    {% endwith %}
+                </div>
+            </main>
+        </div>
+
+        {% block sidebar %}
+            {% show_sidebar %}
+        {% endblock %}
+    </div>
+
+    <div class="row g-0 flex-shrink-0">
+        <footer class="py-4 bg-black">
+            <div class="container text-center text-secondary small">
+                Footer
+            </div>
+        </footer>
+    </div>
+</div>
+</body>
+</html>

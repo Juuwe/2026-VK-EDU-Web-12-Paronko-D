@@ -1,0 +1,13 @@
+<div>
+    {% if label %}
+        <label for="{{ field_id }}" class="form-label fw-semibold">{{ label }}</label>
+    {% endif %}
+
+    <input type="{{ type|default:'text' }}"
+            id="{{ field_id }}"
+            name="{{ name }}"
+            class="form-control border-2 shadow-sm"
+            placeholder="{{ placeholder }}"
+            value="{{ value }}"
+            {% if required %}required{% endif %}>
+</div>

@@ -1,0 +1,28 @@
+<aside class="col-lg-3 border-start border-secondary">
+    <div class="card shadow-sm m-3">
+
+        <div class="card-body">
+            <h3 class="sidebar-title mb-3">Популярные теги</h3>
+            <div class="d-flex flex-wrap gap-2">
+                {% for tag in popular_tags %}
+                    <a href="{% url 'tag' tag.name %}" class="badge bg-light text-primary border text-decoration-none p-2">{{ tag.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm m-3">
+        <div class="card-body">
+            <h3 class="sidebar-title mb-3">Лучшие пользователи</h3>
+            <ul class="list-unstyled mb-0">
+                {% for user in best_users %}
+                    <li class="py-2 d-flex align-items-center">
+                        <span class="bg-primary rounded-circle me-3" style="width: 10px; height: 10px; padding: 0;"></span>
+                        <a href="#" class="text-decoration-none text-dark">{{ user.nickname }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</aside>
