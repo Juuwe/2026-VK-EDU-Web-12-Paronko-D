@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container px-5 mt-3">
+    {% include 'questions/partials/question_card.html' %}
+
+    <hr class="my-4">
+
+    <h4 class="mb-4">Ответы ({{ page_obj|length }})</h4>
+
+    <div class="d-flex flex-column gap-3 mb-5">
+        {% for answer in page_obj.object_list %}
+            {% include 'questions/partials/answer_card.html' %}
+        {% endfor %}
+    </div>
+
+    <div class="mb-5">
+        <h5 class="mb-3">Ваш ответ</h5>
+        <textarea class="form-control border-2 mb-3" style="resize: none;" rows="6" placeholder="Напишите решение здесь..."></textarea>
+        <button class="btn btn-primary px-4 rounded-pill fw-bold">Ответить</button>
+    </div>
+</div>
+{% include 'questions/partials/pagination.html' %}
+{% endblock %}

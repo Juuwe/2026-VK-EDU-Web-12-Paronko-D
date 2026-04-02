@@ -1,0 +1,52 @@
+<div class="card">
+    <div class="card-body">
+        <div class="row align-items-center mb-3">
+            <div class="col-auto d-flex flex-column align-items-center">
+                <img src="/public/static/img/avatar-default.svg" alt="" width="32" height="32" class="rounded-circle border">
+                <p class="small mb-0 mt-1 text-break">{{ question.author_nickname }}</p>
+            </div>
+
+            <div class="col p-0">
+                <h5 class="card-title mb-0">
+                    <a href="{% url 'question' question.id %}" class="text-decoration-none fw-bold text-dark">
+                        {{ question.title }}
+                    </a>
+                </h5>
+            </div>
+        </div>
+
+        <div class="row">
+            <p class="text-muted">{{ question.text }}</p>
+        </div>
+    </div>
+
+    <div class="card-footer bg-transparent border-top-0">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+
+            <div class="d-flex gap-3 align-items-center">
+                <div class="d-flex justify-content-between align-items-center border rounded-4 p-1 bg-light" style="min-width: 80px;">
+                    <span class="fw-bold small px-2">{{ question.total_likes }}</span>
+                    <div class="d-flex flex-column">
+                        <button class="btn btn-sm btn-link text-dark p-0 m-0 lh-1"><i class="bi bi-caret-up-fill"></i></button>
+                        <button class="btn btn-sm btn-link text-dark p-0 m-0 lh-1"><i class="bi bi-caret-down-fill"></i></button>
+                    </div>
+                </div>
+                <a href="{% url 'question' question.id %}" class="btn btn-outline-primary btn-sm rounded-pill">
+                    Ответы ({{ question.total_answers }})
+                </a>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 flex-grow-1">
+                {% for tag in question.tags %}
+                    <a href="{% url 'tag' tag %}" class="badge bg-light text-primary border rounded-pill fw-normal text-decoration-none py-2 px-3">
+                        {{ tag }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            <small class="text-muted ms-auto">
+                    {{ question.time }}
+            </small>
+        </div>
+    </div>
+</div>

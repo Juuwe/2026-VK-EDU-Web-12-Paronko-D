@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    {% block header %}
+    {% endblock %}
+
+    <div class="d-flex flex-column gap-3 px-5 mb-5">
+
+        {% if not page_obj.object_list %}
+            <h4 class="">Ничего не найдено</h4>
+        {% endif %}
+
+        {% for question in page_obj.object_list %}
+            {% include 'questions/partials/question_card.html' %}
+        {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+        {% include 'questions/partials/pagination.html' %}
+    {% endif %}
+</div>
+{% endblock %}
