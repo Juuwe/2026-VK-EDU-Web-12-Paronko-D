@@ -13,4 +13,4 @@ __pycache__/
 *.log
 *.sqlite3
 media/
-static/
+/static/
