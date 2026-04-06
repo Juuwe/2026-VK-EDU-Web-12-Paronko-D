@@ -29,11 +29,12 @@
 
                 <div class="col-md-8 mx-auto d-grid gap-3">
 
-                    {% include 'partials/form_field.html' with field_id='signup_login' label='Логин' placeholder='Придумайте логин... (длина: 3 - 32 символа)' required=True %}
+                    <!-- Временный хардкод параметра value, пока не настроим систему авторизации пользователей   -->
+                    {% include 'partials/form_field.html' with field_id='signup_login' label='Логин' placeholder='Придумайте логин... (длина: 3 - 32 символа)' value='login' required=True %}
 
-                    {% include 'partials/form_field.html' with field_id='signup_email' label='Email' placeholder='example@mail.com' required=True %}
+                    {% include 'partials/form_field.html' with field_id='signup_email' label='Email' placeholder='example@mail.com' value='email' required=True %}
 
-                    {% include 'partials/form_field.html' with field_id='signup_username' label='Никнейм' placeholder='Придумайте никнейм...' required=True %}
+                    {% include 'partials/form_field.html' with field_id='signup_username' label='Никнейм' placeholder='Придумайте никнейм...' value='nickname' required=True %}
 
                         <!-- <div class="d-flex flex-column">
                             <small class="text-danger mt-1">Заполните поле</small>
