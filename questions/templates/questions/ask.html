@@ -6,39 +6,33 @@
 
 {% block content %}
 <div class="container py-4 my-auto mx-auto" style="max-width: 900px;">
-    <form action="" method="POST" class="needs-validation">
+    <form action="{% url 'ask' %}" method="POST">
+        {% csrf_token %}
         <h3 class="h3 fw-bold mb-4">Новый вопрос</h3>
 
-        <div class="mb-3">
-            <label for="title" class="form-label fw-semibold">Тема</label>
-            <input type="text" id="title" class="form-control border-2 shadow-sm" placeholder="Введите тему... (макс. 50 символов)" required>
-            <div class="form-text">0/50</div>
-            <!-- <small class="text-danger mt-1">
-                Это обязательное поле
-            </small> -->
+        <div class="d-flex flex-column gap-3">
+            <div>
+                {% include 'partials/form_field.html' with field_id="title" label="Тема" placeholder="Введите тему..." required=True %}
+                <div class="form-text">0/50</div>
+            </div>
+
+            <div>
+                {% include 'partials/form_field.html' with field_id="body" type="textarea" label="Вопрос" rows=8 placeholder="Сформулируйте вопрос..." required=True %}
+                <div class="form-text">0/1000</div>
+            </div>
+
+            <div>
+                {% include 'partials/form_field.html' with field_id="tags" label="Теги" placeholder="Укажите теги (макс. 5)" %}
+                <div class="form-text">0/5</div>
+                <div class="form-text">Используйте запятые для разделения тегов</div>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="body" class="form-label fw-semibold">Вопрос</label>
-            <textarea id="body" class="form-control border-2 shadow-sm" style="resize: none;" rows="8" placeholder="Сформулируйте вопрос... (макс. 1000 символов)" required></textarea>
-            <div class="form-text">0/1000</div>
-            <!-- <small class="text-danger mt-1">
-                Это обязательное поле
-            </small> -->
-        </div>
 
-        <div class="mb-4">
-            <label for="tags" class="form-label fw-semibold">Теги</label>
-            <input type="text" id="tags" class="form-control border-2 shadow-sm"
-                    placeholder="Укажите теги (макс. 5)">
-            <div class="form-text">0/5</div>
-            <div class="form-text">Используйте запятые для разделения тегов</div>
-        </div>
-
-        <div class="d-flex mt-4" style="min-width: 300px;">
-            <button type="submit" class="btn btn-primary btn-lg fw-bold rounded-pill shadow-sm flex-grow-1", style="max-width: 250px;">
-                Отправить
-            </button>
+        <div class="row justify-content-end mt-4">
+            <div class="col-12 col-md-4 col-lg-3">
+                {% include 'partials/form_button.html' with text='Отправить' %}
+            </div>
         </div>
     </form>
 </div>

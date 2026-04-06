@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 
+{% block title %}
+{{ question.title }}
+{% endblock %}
+
 {% block content %}
 <div class="container px-5 mt-3">
     {% include 'questions/partials/question_card.html' %}
 
     <hr class="my-4">
 
-    <h4 class="mb-4">Ответы ({{ page_obj|length }})</h4>
+    <h4 class="mb-4">Ответы ({{ page_obj.paginator.count }})</h4>
 
     <div class="d-flex flex-column gap-3 mb-5">
         {% for answer in page_obj.object_list %}
@@ -15,10 +19,21 @@
     </div>
 
     <div class="mb-5">
-        <h5 class="mb-3">Ваш ответ</h5>
-        <textarea class="form-control border-2 mb-3" style="resize: none;" rows="6" placeholder="Напишите решение здесь..."></textarea>
-        <button class="btn btn-primary px-4 rounded-pill fw-bold">Ответить</button>
+        <form action="{% url 'ask' %}" method="POST">
+            {% csrf_token %}
+            <h5 class="mb-3">Ваш ответ</h5>
+
+            {% include 'partials/form_field.html' with type="textarea" field_id="answer_input" placeholder="Напишите решение здесь..." required=True %}
+
+            <div class="row justify-content-end mt-4">
+                <div class="col-12 col-md-4 col-lg-3">
+                    {% include 'partials/form_button.html' with text='Ответить' %}
+                </div>
+            </div>
+        </form>
     </div>
 </div>
-{% include 'questions/partials/pagination.html' %}
+{% if page_obj.paginator.num_pages > 1 %}
+    {% include 'questions/partials/pagination.html' %}
+{% endif %}
 {% endblock %}

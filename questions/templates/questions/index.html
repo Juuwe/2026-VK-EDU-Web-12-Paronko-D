@@ -1,14 +1,9 @@
 {% extends 'questions/layout/questions_list.html' %}
-{% block header %}
-<div class="d-inline-flex mt-3 mb-4 border border-2 rounded-3 p-1">
-    <a href="{% url 'index' %}"
-        class="btn {% if request.resolver_match.url_name == 'index' %} {{ btn_active }} {% else %} {{ btn_inactive }} {% endif %}">
-    Новые
-    </a>
 
-    <a href="{% url 'hot' %}"
-        class="btn {% if request.resolver_match.url_name == 'hot' %} {{ btn_active }} {% else %} {{ btn_inactive }} {% endif %}">
-    Интересные
-    </a>
-</div>
+{% block title %}
+Новые вопросы
+{% endblock %}
+
+{% block header %}
+    {% include 'questions/partials/tabs.html' with active_tab='new' %}
 {% endblock %}
