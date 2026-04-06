@@ -17,19 +17,21 @@
 
 {% block form_content %}
 
-{% include 'partials/form_field.html' with field_id='auth_login' label='Логин или Email' placeholder='Придумайте логин...' %}
+<div class="d-flex flex-column gap-3">
+    {% include 'partials/form_field.html' with field_id='auth_login' label='Логин или Email' placeholder='Логин / Email...' required=True %}
 
-{% include 'partials/form_field.html' with type='password' field_id='auth_password' label='Пароль' placeholder='Пароль...' %}
+    {% include 'partials/form_field.html' with type='password' field_id='auth_password' label='Пароль' placeholder='Пароль...' required=True %}
 
-<div class="mb-4 form-check">
-    <input type="checkbox" class="form-check-input" id="remind-checkbox">
-    <label class="form-check-label" for="remind-checkbox">Запомнить меня</label>
+    <div class="mb-4 form-check">
+        <input type="checkbox" class="form-check-input" id="remind-checkbox">
+        <label class="form-check-label" for="remind-checkbox">Запомнить меня</label>
+    </div>
 </div>
 
+
+
 <div class="d-grid gap-2">
-    <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm rounded-3 flex-grow-1">
-        Войти
-    </button>
+    {% include 'partials/form_button.html' with text='Войти' %}
 </div>
 
 <div class="mt-4 text-center">

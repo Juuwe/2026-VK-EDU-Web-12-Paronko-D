@@ -18,35 +18,17 @@
 {% block form_content %}
 
 <div class="d-flex flex-column gap-3">
-    {% include 'partials/form_field.html' with field_id='signup_login' label='Логин' placeholder='Придумайте логин... (длина: 3 - 32 символа)' %}
+    {% include 'partials/form_field.html' with field_id='signup_login' label='Логин' placeholder='Придумайте логин... (3 - 32 символа)' required=True %}
 
-    {% include 'partials/form_field.html' with field_id='signup_email' label='Email' placeholder='example@mail.com' %}
+    {% include 'partials/form_field.html' with field_id='signup_email' label='Email' placeholder='example@mail.com' required=True %}
 
-    {% include 'partials/form_field.html' with field_id='signup_username' label='Никнейм' placeholder='Придумайте никнейм...' %}
+    {% include 'partials/form_field.html' with field_id='signup_username' label='Никнейм' placeholder='Придумайте никнейм...' required=True %}
 
-    {% include 'partials/form_field.html' with type='password' field_id='signup_password' label='Пароль' placeholder='Придумайте пароль...'%}
-    {% include 'partials/form_field.html' with type='password' field_id='signup_password_conf' placeholder='Подтвердите пароль...' %}
-
-    {% include 'partials/form_field.html' with type='file' field_id='signup_avatar' label='Фото профиля' %}
-    <div class="form-text">Выберите изображение (JPG, PNG) (до 2 МБ)</div>
-</div>
-
-
-
-    <!-- <div class="d-flex flex-column">
-        <small class="text-danger mt-1">Это обязательное поле</small>
-        <small class="text-danger mt-1">Некорректный домен</small>
-        <small class="text-danger mt-1">Данный email уже зарегистрирован</small>
-    </div> -->
-
-<!--
-    <div class="d-flex flex-column">
-        <small class="text-danger mt-1">Это обязательное поле</small>
-        <small class="text-danger mt-1">Данный никнейм уже занят</small>
-    </div> -->
+    {% include 'partials/form_field.html' with type='password' field_id='signup_password' label='Пароль' placeholder='Придумайте пароль...' required=True %}
+    {% include 'partials/form_field.html' with type='password' field_id='signup_password_conf' placeholder='Подтвердите пароль...' required=True %}
 
     <div>
-        <ul class="list-unstyled d-inline-block border border-1 border-primary border-opacity-50 rounded-4 p-1">
+        <ul class="list-unstyled d-inline-block border border-1 border-primary border-opacity-50 rounded-4 p-1 mb-0">
             <li class="d-flex align-items-center mb-2">
                 <span class="bg-primary rounded-circle me-2" style="width: 8px; height: 8px;"></span>
                 <small class="text-muted">Минимум 8 символов</small>
@@ -70,6 +52,26 @@
         </ul>
     </div>
 
+    <div>
+        {% include 'partials/form_field.html' with type='file' field_id='signup_avatar' label='Фото профиля' %}
+        <div class="form-text">Выберите изображение (JPG, PNG) (до 2 МБ)</div>
+    </div>
+</div>
+
+
+
+    <!-- <div class="d-flex flex-column">
+        <small class="text-danger mt-1">Это обязательное поле</small>
+        <small class="text-danger mt-1">Некорректный домен</small>
+        <small class="text-danger mt-1">Данный email уже зарегистрирован</small>
+    </div> -->
+
+<!--
+    <div class="d-flex flex-column">
+        <small class="text-danger mt-1">Это обязательное поле</small>
+        <small class="text-danger mt-1">Данный никнейм уже занят</small>
+    </div> -->
+
     <!-- <div class="d-flex flex-column">
         <small class="text-danger mt-1">Пароли не совпадают</small>
         <small class="text-danger mt-1">Пароль не удовлетворяет требованиям</small>
@@ -80,11 +82,9 @@
         <small class="text-danger mt-1">Размер файла слишком большой</small>
     </div> -->
 
-<div class="d-grid gap-2">
+<div class="d-grid gap-2 mt-4">
     <!-- <p class="text-danger mt-2 text-center"> Ошибка регистрации. Попробуйте позже </p>  -->
-    <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm rounded-3">
-        Создать аккаунт
-    </button>
+    {% include 'partials/form_button.html' with text='Создать аккаунт' %}
 </div>
 
 <div class="mt-4 text-center">

@@ -1,22 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid px-5">
-    <div class="row">
-        <div class="col-auto">
-            <div class="d-inline-flex mt-3 mb-2 border border-2 rounded-3 p-1">
-                <a href="{% url 'profile' %}"
-                    class="btn {% if request.resolver_match.url_name == 'profile' %} {{ btn_active }} {% else %} {{ btn_inactive }} {% endif %}">
-                Профиль
-                </a>
-
-                <a href="{% url 'settings' %}"
-                    class="btn {% if request.resolver_match.url_name == 'settings' %} {{ btn_active }} {% else %} {{ btn_inactive }} {% endif %}">
-                Настройки
-                </a>
-            </div>
-        </div>
-    </div>
+<div class="container px-5">
+    {% block header %}
+    {% endblock %}
 
     {% block profile_content %}
     {% endblock %}
