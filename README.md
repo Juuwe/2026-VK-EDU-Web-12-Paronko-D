@@ -1,18 +1,81 @@
-# ДЗ №1. Верстка статического сайта
+# ДЗ№2. Обработка HTTP запросов
 
-## Запуск верстки
+## Подготовка проекта
 
-1. Склонируйте репозиторий `git clone https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D/tree/hw-1`
-2. Переключитесь на ветку c ДЗ `git checkout hw-1`
-3. Перейдите в папку проекта *2026-VK-EDU-Web-12-Paronko-D/public*
-4. Открыть любой из файлов статической верстки можно через расширение Live Server или браузер
+1. **Клонируйте репозиторий:** \
+   `git clone https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D.git`
+
+2. **Перейдите в директорию с проектом:** \
+   `cd 2026-VK-EDU-Web-12-Paronko-D`
+
+3. **Переключитесь на ветку hw-2:** \
+   `git checkout hw-2`
+
+## Запуск через Docker
+
+**Для запуска приложения выполните команду**: \
+`docker-compose up --build`
+
+**Приложение будет доступно по адресу:** *http://localhost:8000*
+
+---
+
+## Локальный запуск
+
+1. **Создайте venv:** \
+   `python -m venv venv`
+
+2. **Активируйте venv:** \
+   Windows: `venv\Scripts\activate` \
+   Linux/MacOS: `source venv/bin/activate`
+
+3. **Установите зависимости:**
+   `pip install -r requirements.txt`
+
+4. **Запустите сервер:** \
+   `python manage.py runserver`
+
+**Приложение будет доступно по адресу:** *http://localhost:8000*
+
+
+## Структура проекта
+
+Организация файлов проекта:
+
+```text
+EDU-Web/
+├── application/               # Директория с настройками проекта (settings.py, urls.py)
+├── core/                      # Приложение пользователя (вход, регистрация, профиль)
+│   ├── templates/core/        # Шаблоны приложения core
+│   │   ├── layout/            # Шаблоны общей верстки страниц core
+│   │   └──partials/           # Шаблоны компонентов верстки страниц core
+│   ├── templatetags/          # Кастомные теги для шаблонов
+│   └── static/core/           # Статика приложения core
+├── questions/                 # Приложение вопросов (списки, теги, ответы)
+│   ├── templates/questions/   # Шаблоны приложения questions
+│   │   ├── layout/            # Шаблоны общей верстки страниц questions
+│   │   └──partials/           # Шаблоны компонентов верстки страниц questions
+│   └── static/core/           # Статика приложения questions
+├── manage.py                  # Скрипт управления Django
+├── static/                    # Папка для собранных статических файлов
+├── media/                     # Папка для загруженных пользователем файлов
+├── requirements.txt           # Файл с зависимостями проекта
+├── Dockerfile                 # Инструкция для сборки образа проекта
+├── docker-compose.yml         # Конфигурация для запуска в контейнерах
+└── .env.example               # Шаблон конфигурации (без секретных данных)
+```
 
 ## Роуты
-[public/base.html](https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D/blob/hw-1/public/base.html) \
-[public/index.html](https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D/blob/hw-1/public/index.html) \
-[public/ask.html](https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D/blob/hw-1/public/ask.html) \
-[public/question.html](https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D/blob/hw-1/public/question.html) \
-[public/profile.html](https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D/blob/hw-1/public/profile.html) \
-[public/settings.html](https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D/blob/hw-1/public/settings.html) \
-[public/login.html](https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D/blob/hw-1/public/login.html) \
-[public/signup.html](https://github.com/Juuwe/2026-VK-EDU-Web-12-Paronko-D/blob/hw-1/public/signup.html)
+
+**Приложение `questions` (Вопросы):**
+* `/`             - Главная страница (список новых вопросов).
+* `hot/`          - Список популярных вопросов.
+* `tag/tag_name/` - Список вопросов по тегу (вместо `tag_name` можно вводить любой тег).
+* `question/42/`  - Страница конкретного вопроса (вместо `42` можно вводить любой ID).
+* `ask/`          - Форма создания нового вопроса.
+
+**Приложение `core` (Пользователи):**
+* `login/` - Страница входа в систему.
+* `signup/` - Страница регистрации нового аккаунта.
+* `profile/` - Просмотр личного профиля.
+* `settings/` - Настройки профиля и редактирование данных.
