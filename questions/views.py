@@ -48,7 +48,7 @@ def index(request):
 
 def hot(request):
     questions = QUESTIONS[::-1]
-    return render(request, 'questions/index.html', get_page_context(questions, request))
+    return render(request, 'questions/hot.html', get_page_context(questions, request))
 
 def tag(request, tag_name):
     questions = QUESTIONS[5:10]
