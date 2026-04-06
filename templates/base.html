@@ -18,50 +18,7 @@
 <body>
 <div class="container-fluid p-0 d-flex flex-column vh-100">
     <header class="shadow-sm py-2">
-        <div class="container-fluid">
-            <div class="row align-items-center g-2">
-
-            <div class="col-auto me-auto">
-                <a href="{% url 'index' %}" class="logo text-nowrap text-decoration-none">try {</a>
-            </div>
-
-            {% if user.is_authenticated %}
-                <div class="col-12 col-md-8 order-3 order-md-2 px-md-4">
-                    <form class="d-flex gap-2">
-                    <input type="text" class="form-control" placeholder="Искать вопрос...">
-                    <a href="{% url 'ask' %}" class="btn btn-primary">Вопрос!</a>
-                    </form>
-                </div>
-            {% endif %}
-
-
-            <div class="col-auto ms-auto order-2 order-md-3">
-                {% if user.is_authenticated %}
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="text-end d-none d-sm-block">
-                            <a href="profile.html" class="fw-bold small d-block text-dark text-decoration-none">{{ username }}</a>
-                        </div>
-                        <img src="" width="32" height="32" class="rounded-circle border">
-
-
-                        <div class="d-flex flex-column border-start ps-3" style="font-size: 13px;">
-                            <a href="settings.html" class="text-muted text-decoration-none">Настройки</a>
-                            <a href="#" class="text-danger text-decoration-none">Выйти</a>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="d-flex gap-2">
-                        <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm px-3 rounded-3">
-                            Войти
-                        </a>
-
-                        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm px-3 rounded-3">
-                            Регистрация
-                        </a>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
+        {% include 'partials/header.html' %}
     </header>
 
     <div class="row g-0 flex-grow-1">
@@ -85,9 +42,7 @@
 
     <div class="row g-0 flex-shrink-0">
         <footer class="py-4 bg-black">
-            <div class="container text-center text-secondary small">
-                Footer
-            </div>
+            {% include 'partials/footer.html' %}
         </footer>
     </div>
 </div>
