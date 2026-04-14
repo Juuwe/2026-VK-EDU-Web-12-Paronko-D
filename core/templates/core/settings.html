@@ -11,54 +11,55 @@
 {% block profile_content %}
 <div class="row mt-3">
     <div class="col">
-        <form action="" method="post" class="needs-validation mb-3">
+        <form action="" method="post" enctype="multipart/form-data" class="needs-validation mb-3">
+
+            {% csrf_token %}
+
             <div class="row">
                 <div class="col-md-3">
                     <div class="d-flex flex-column mb-3">
-                        <label for="avatar" class="form-label fw-semibold">Фото профиля</label>
-                        <img src="" width="128" height="128" class="border rounded-circle mb-2">
-                        <input type="file" name="" id="avatar" class="form-control form-control-sm border-2 shadow-sm">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                            {{ form.avatar.label }}
+                        </label>
 
-                        <!--
-                        <div class="d-flex flex-column">
-                            <small class="text-danger mt-1">Ошибка чтения файла</small>
-                            <small class="text-danger mt-1">Размер файла слишком большой</small>
-                        </div> -->
+                        <img src="" width="128" height="128" class="border rounded-circle mb-2">
+
+                        {{ form.avatar }}
+
+                        {% if form.avatar.errors %}
+                            <div class="text-danger small p-1">
+                                {% for error in form.avatar.errors %}
+                                    <p class="m-0">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
                     </div>
                 </div>
 
                 <div class="col-md-8 mx-auto d-grid gap-3">
+                    {% for field in form %}
 
-                    <!-- Временный хардкод параметра value, пока не настроим систему авторизации пользователей   -->
-                    {% include 'partials/form_field.html' with field_id='signup_login' label='Логин' placeholder='Придумайте логин... (длина: 3 - 32 символа)' value='login' required=True %}
+                        {% if field.name != 'avatar' %}
+                            <div class="">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                                    {{ field.label }}
+                                </label>
+                                {{ field }}
 
-                    {% include 'partials/form_field.html' with field_id='signup_email' label='Email' placeholder='example@mail.com' value='email' required=True %}
+                                {% if field.errors %}
+                                    <div class="text-danger small p-1">
+                                        {% for error in field.errors %}
+                                            <p class="m-0">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
 
-                    {% include 'partials/form_field.html' with field_id='signup_username' label='Никнейм' placeholder='Придумайте никнейм...' value='nickname' required=True %}
+                        {% endif %}
+                    {% endfor %}
 
-                        <!-- <div class="d-flex flex-column">
-                            <small class="text-danger mt-1">Заполните поле</small>
-                            <small class="text-danger mt-1">Логин слишком короткий</small>
-                        </div> -->
-
-
-
-                        <!-- <div class="d-flex flex-column">
-                            <small class="text-danger mt-1">Заполните поле</small>
-                            <small class="text-danger mt-1">Некорректный домен</small>
-                            <small class="text-danger mt-1">Данный Email уже зарегистрирован</small>
-                        </div> -->
-
-                        <!--
-                        <div class="d-flex flex-column">
-                            <small class="text-danger mt-1">Заполните поле</small>
-                            <small class="text-danger mt-1">Данный никнейм уже занят</small>
-                        </div> -->
-
-                    <div class="d-grid gap-2">
-                        <!-- <p class="text-success text-center m-0 p-0">На Вашу почту отправлено письмо с подтверждением</p>
-                        <p class="text-danger text-center m-0">Ошибка сохранения. Попробуйте позже</p> -->
-
+                    <div class="d-grid gap-2 mt-3">
                         {% include 'partials/form_button.html' with text='Сохранить' %}
                     </div>
                 </div>

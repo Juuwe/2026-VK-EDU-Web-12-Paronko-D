@@ -17,45 +17,41 @@
 
 {% block form_content %}
 
+{% if form.non_field_errors %}
+    <div class="alert alert-danger p-2 text-center">
+        {% for error in form.non_field_errors %}
+            <p class="mb-0">{{ error }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
 <div class="d-flex flex-column gap-3">
-    {% include 'partials/form_field.html' with field_id='signup_login' label='Логин' placeholder='Придумайте логин... (3 - 32 символа)' required=True %}
+    {% for field in form %}
+        <div class="">
+            <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                {{ field.label }}
+            </label>
+            {{ field }}
 
-    {% include 'partials/form_field.html' with field_id='signup_email' label='Email' placeholder='example@mail.com' required=True %}
+            {% if field.name == 'password' %}
+                {% include 'core/partials/password_help.html' %}
+            {% endif %}
 
-    {% include 'partials/form_field.html' with field_id='signup_username' label='Никнейм' placeholder='Придумайте никнейм...' required=True %}
+            {% if field.help_text %}
+                <small class="form-text text-muted d-block mt-2">
+                    {{ field.help_text|safe }}
+                </small>
+            {% endif %}
 
-    {% include 'partials/form_field.html' with type='password' field_id='signup_password' label='Пароль' placeholder='Придумайте пароль...' required=True %}
-    {% include 'partials/form_field.html' with type='password' field_id='signup_password_conf' placeholder='Подтвердите пароль...' required=True %}
-
-    <div>
-        <ul class="list-unstyled d-inline-block border border-1 border-primary border-opacity-50 rounded-4 p-1 mb-0">
-            <li class="d-flex align-items-center mb-2">
-                <span class="bg-primary rounded-circle me-2" style="width: 8px; height: 8px;"></span>
-                <small class="text-muted">Минимум 8 символов</small>
-            </li>
-            <li class="d-flex align-items-center mb-2">
-                <span class="bg-primary rounded-circle me-2" style="width: 8px; height: 8px;"></span>
-                <small class="text-muted">Только латинский алфавит A-Z, a-z</small>
-            </li>
-            <li class="d-flex align-items-center mb-2">
-                <span class="bg-primary rounded-circle me-2" style="width: 8px; height: 8px;"></span>
-                <small class="text-muted">Цифры 0-9</small>
-            </li>
-            <li class="d-flex align-items-center mb-2">
-                <span class="bg-primary rounded-circle me-2" style="width: 8px; height: 8px;"></span>
-                <small class="text-muted">Хотя бы одна заглавная</small>
-            </li>
-            <li class="d-flex align-items-center mb-0">
-                <span class="bg-primary rounded-circle me-2" style="width: 8px; height: 8px;"></span>
-                <small class="text-muted">Хотя бы один спец. символ</small>
-            </li>
-        </ul>
-    </div>
-
-    <div>
-        {% include 'partials/form_field.html' with type='file' field_id='signup_avatar' label='Фото профиля' %}
-        <div class="form-text">Выберите изображение (JPG, PNG) (до 2 МБ)</div>
-    </div>
+             {% if field.errors %}
+                <div class="text-danger small p-1">
+                    {% for error in field.errors %}
+                        <p class="m-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
 </div>
 
 
