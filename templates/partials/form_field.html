@@ -15,9 +15,16 @@
         <input type="{{ type|default:'text' }}"
                 id="{{ field_id }}"
                 name="{{ name|default:field_id }}"
-                class="form-control border-2 shadow-sm"
+                class="form-control border-2 shadow-sm {% if error %} is-invalid {% endif %}"
                 placeholder="{{ placeholder }}"
                 value="{{ value }}"
-                {% if required %}required{% endif %}>
+                {% if required %}required{% endif %}
+                {% if pattern %}pattern="{{ pattern }}"{% endif %}>
+
+        {% if error %}
+            <div class="invalid-feedback d-block">
+                {{ error }}
+            </div>
+        {% endif %}
     {% endif %}
 </div>
