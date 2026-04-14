@@ -150,7 +150,7 @@ class SignupForm(LoginFieldMixin, EmailFieldMixin, NicknameFieldMixin, PasswordF
         password = cleaned_data.get('password')
         password_confirm = cleaned_data.get('password_confirm')
 
-        if password != password_confirm:
+        if password and password_confirm and password != password_confirm:
             raise ValidationError('Пароли не совпадают')
 
         return cleaned_data
