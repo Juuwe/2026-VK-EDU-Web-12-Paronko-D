@@ -1,14 +1,16 @@
 .idea/
 .vscode/
-
 .DS_Store
 
-
-*.log
-*.sqlite3
 .env
-__pycache__/
 
 venv/
 .venv/
-env/
+
+*.pyc
+__pycache__/
+
+*.log
+*.sqlite3
+media/
+/static/

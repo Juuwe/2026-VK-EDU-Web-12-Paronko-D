@@ -1,0 +1,9 @@
+{% extends 'questions/layout/questions_list.html' %}
+
+{% block title %}
+Новые вопросы
+{% endblock %}
+
+{% block header %}
+    {% include 'questions/partials/tabs.html' with active_tab='new' %}
+{% endblock %}

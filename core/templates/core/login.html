@@ -1,0 +1,55 @@
+{% extends 'core/layout/auth_base.html' %}
+
+{% block title %}
+Вход
+{% endblock %}
+
+{% block auth_title %}
+Вход
+{% endblock %}
+
+{% block form_width %}
+500px
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block form_content %}
+
+<div class="d-flex flex-column gap-3">
+    {% for field in form %}
+        {% if field.field.widget.input_type == 'checkbox' %}
+            <div class="form-check mb-4">
+                {{ field }}
+                <label class="form-check-label" for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label>
+            </div>
+        {% else %}
+            <div class="">
+                <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<div class="d-grid gap-2">
+    {% include 'partials/form_button.html' with text='Войти' %}
+</div>
+
+<div class="mt-4 text-center">
+    <p class="small text-muted mb-0">
+        Забыли пароль? <a href="" class="text-decoration-none">Восстановить</a>
+    </p>
+</div>
+
+<div class="mt-2 text-center">
+    <p class="small text-muted mb-0">
+        Нет аккаунта? <a href="{% url 'signup' %}" class="text-decoration-none">Регистрация</a>
+    </p>
+</div>
+{% endblock %}

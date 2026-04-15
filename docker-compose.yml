@@ -1,0 +1,13 @@
+name: try_app
+
+services:
+  web:
+    build: .
+    container_name: web_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - django_media:/app/media
+volumes:
+  django_media:

@@ -1,0 +1,9 @@
+{% extends 'questions/layout/questions_list.html' %}
+
+{% block title %}
+Популярные вопросы
+{% endblock %}
+
+{% block header %}
+    {% include 'questions/partials/tabs.html' with active_tab='hot' %}
+{% endblock %}

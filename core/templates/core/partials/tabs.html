@@ -1,0 +1,7 @@
+<div class="d-inline-flex mt-3 mb-4 border border-2 rounded-3 p-1">
+    <a href="{% url 'profile' %}" class="btn {% if active_tab == 'profile' %} {{ btn_active }} {% else %} {{ btn_inactive }} {% endif %}"> Профиль </a>
+
+    <a href="{% url 'settings' %}" class="btn {% if active_tab == 'settings' %} {{ btn_active }} {% else %} {{ btn_inactive }} {% endif %}"> Настройки </a>
+
+    <!-- Вынес вкладки в отдельный файл, чтобы было удобно при добавлении новых -->
+</div>

@@ -1,0 +1,70 @@
+{% extends 'core/layout/profile_base.html' %}
+
+{% block title %}
+Настройки
+{% endblock %}
+
+{% block header %}
+    {% include 'core/partials/tabs.html' with active_tab='settings' %}
+{% endblock %}
+
+{% block profile_content %}
+<div class="row mt-3">
+    <div class="col">
+        <form action="" method="post" enctype="multipart/form-data" class="needs-validation mb-3">
+
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="d-flex flex-column mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                            {{ form.avatar.label }}
+                        </label>
+
+                        <img src="" width="128" height="128" class="border rounded-circle mb-2">
+
+                        {{ form.avatar }}
+
+                        {% if form.avatar.errors %}
+                            <div class="text-danger small p-1">
+                                {% for error in form.avatar.errors %}
+                                    <p class="m-0">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <div class="col-md-8 mx-auto d-grid gap-3">
+                    {% for field in form %}
+
+                        {% if field.name != 'avatar' %}
+                            <div class="">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                                    {{ field.label }}
+                                </label>
+                                {{ field }}
+
+                                {% if field.errors %}
+                                    <div class="text-danger small p-1">
+                                        {% for error in field.errors %}
+                                            <p class="m-0">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        {% endif %}
+                    {% endfor %}
+
+                    <div class="d-grid gap-2 mt-3">
+                        {% include 'partials/form_button.html' with text='Сохранить' %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
