@@ -1,0 +1,17 @@
+from django.db import models
+from django.db.models import Count
+
+class QuestionManager(models.Manager):
+    def hot(self):
+        return self.order_by('-rating')
+
+    def tag(self, tag_name):
+        return self.filter(tags__name=tag_name)
+
+class AnswerManager(models.Manager):
+    def best(self):
+        return self.order_by('-is_corect', '-rating', '-created_at')
+
+class TagManager(models.Manager):
+    def popular(self, limit=20):
+        return self.annotate(question_count=Count('questions')).order_by('-question_count')[:limit]
