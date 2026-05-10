@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load pagination %}
 
 {% block title %}
 {{ question.title }}
@@ -13,8 +14,10 @@
     <h4 class="mb-4">Ответы ({{ page_obj.paginator.count }})</h4>
 
     <div class="d-flex flex-column gap-3 mb-5">
-        {% for answer in page_obj.object_list %}
+        {% for answer in answers %}
             {% include 'questions/partials/answer_card.html' %}
+        {% empty %}
+            <p class="text-muted">Пока нет ни одного ответа к этому вопросу</p>
         {% endfor %}
     </div>
 
@@ -34,6 +37,6 @@
     </div>
 </div>
 {% if page_obj.paginator.num_pages > 1 %}
-    {% include 'questions/partials/pagination.html' %}
+    {% show_pagination page_obj on_each_side=2 on_ends=1 %}
 {% endif %}
 {% endblock %}
