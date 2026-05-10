@@ -1,26 +1,9 @@
 from django.shortcuts import render
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.views.generic import View, DetailView
 
-from random import randint
-
-QUESTIONS = [
-    {"id": i, "title": f'TITLE{i}', "text": f'TEXT{i}',
-     "total_likes": randint(0, 20), "total_answers": randint(0, 20),
-     "tags": [f'tag:{j}' for j in range(randint(5, 10), randint(11, 15))],
-     "time": f'{randint(20, 30)}.0{randint(3, 4)}.2026'
-    }
-    for i in range(50)
-]
-
-ANSWERS = [
-    {"id": i, "question_id": randint(0, 49),
-     "author_nickname": f'author{i}', "text": f'text{i}', "total_likes": randint(0, 20),
-     "checkbox_value": randint(0, 1), "time": f'{randint(20, 30)}.0{randint(3, 4)}.2026'
-    }
-
-    for i in range(10)
-]
+from .models import Question
 
 def paginate(queryset, request, per_page=20):
     page_number = request.GET.get('page', 1)
@@ -36,35 +19,63 @@ def paginate(queryset, request, per_page=20):
 
     return cur_page
 
-def get_page_context(queryset, request):
-    page_obj = paginate(queryset, request)
-    page_range = page_obj.paginator.get_elided_page_range(page_obj.number, on_each_side=2, on_ends=1)
+class BaseQuestionListView(View):
+    template_name = None
 
-    return {'page_obj': page_obj, 'page_range': page_range}
+    def get_queryset(self):
+        return Question.objects.select_related('author').prefetch_related('tags').all()
 
-def index(request):
-    questions = QUESTIONS
-    return render(request, 'questions/index.html', get_page_context(questions, request))
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        page_obj = paginate(queryset, request, per_page=20)
+        context = {'questions': page_obj.object_list, 'page_obj': page_obj}
+        context.update(self.get_extra_context())
 
-def hot(request):
-    questions = QUESTIONS[::-1]
-    return render(request, 'questions/hot.html', get_page_context(questions, request))
+        return render(request, self.template_name, context)
 
-def tag(request, tag_name):
-    questions = QUESTIONS[5:10]
+    def get_extra_context(self):
+        return {}
 
-    context = {'tag_name': tag_name}
-    context.update(get_page_context(questions, request))
+class IndexView(BaseQuestionListView):
+    template_name = 'questions/index.html'
 
-    return render(request, 'questions/tag.html', context)
+class HotView(BaseQuestionListView):
+    template_name = 'questions/hot.html'
 
-def question(request, question_id):
-    answers = ANSWERS
+    def get_queryset(self):
+        return Question.objects.hot().select_related('author').prefetch_related('tags')
 
-    context = {"question": QUESTIONS[question_id]}
-    context.update(get_page_context(answers, request))
+class ByTagView(BaseQuestionListView):
+    template_name = 'questions/tag.html'
 
-    return render(request, 'questions/question.html', context)
+    def get_queryset(self):
+        return Question.objects.tag(self.kwargs['tag_name']).select_related('author').prefetch_related('tags')
+
+    def get_extra_context(self):
+        return {'tag_name': self.kwargs['tag_name']}
+
+
+class DetailQuestionView(DetailView):
+    model = Question
+    template_name = 'questions/question.html'
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('author').prefetch_related('tags')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        answers_queryset = self.object.answers.all().select_related('author')
+        page_obj = paginate(answers_queryset, self.request, per_page=5)
+
+        context['page_obj'] = page_obj
+
+        context.update({
+            'page_obj': page_obj,
+            'answers': page_obj.object_list
+        })
+
+        return context
 
 def ask(request):
     return render(request, 'questions/ask.html')
