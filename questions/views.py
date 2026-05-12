@@ -1,9 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.views.generic import View, DetailView
+from django.views.generic import View, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Question
+from .forms import AskForm, AnswerForm
+import math
 
 def paginate(queryset, request, per_page=20):
     page_number = request.GET.get('page', 1)
@@ -54,10 +57,10 @@ class ByTagView(BaseQuestionListView):
     def get_extra_context(self):
         return {'tag_name': self.kwargs['tag_name']}
 
-
 class DetailQuestionView(DetailView):
     model = Question
     template_name = 'questions/question.html'
+    per_page = 5
 
     def get_queryset(self):
         return super().get_queryset().select_related('author').prefetch_related('tags')
@@ -66,8 +69,7 @@ class DetailQuestionView(DetailView):
         context = super().get_context_data(**kwargs)
 
         answers_queryset = self.object.answers.all().select_related('author')
-        page_obj = paginate(answers_queryset, self.request, per_page=5)
-
+        page_obj = paginate(answers_queryset, self.request, per_page=self.per_page)
         context['page_obj'] = page_obj
 
         context.update({
@@ -75,7 +77,36 @@ class DetailQuestionView(DetailView):
             'answers': page_obj.object_list
         })
 
+        if 'form' not in context:
+            context['form'] = AnswerForm()
+
         return context
 
-def ask(request):
-    return render(request, 'questions/ask.html')
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        form = AnswerForm(request.POST, user=request.user, question=self.object)
+
+        if form.is_valid():
+            new_answer = form.save()
+
+            last_page = math.ceil(self.object.answers.count() / self.per_page)
+
+            return redirect(f'{self.object.get_absolute_url()}?page={last_page}#answer-{new_answer.id}')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+
+class AskQuestionView(LoginRequiredMixin, CreateView):
+    model = Question
+    form_class = AskForm
+    template_name = 'questions/ask.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
