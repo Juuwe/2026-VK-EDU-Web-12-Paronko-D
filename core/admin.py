@@ -17,7 +17,7 @@ admin.site.register(User, UserAdmin)
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'nickname', 'created_at',)
+    list_display = ('user', 'nickname', 'created_at', 'correct_answers_count',)
     search_fields = ('user__username', 'nickname', 'user__email',)
     list_filter = ('created_at',)
 
