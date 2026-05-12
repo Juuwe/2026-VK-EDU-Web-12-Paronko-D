@@ -1,85 +1,24 @@
 from django import forms
 from django.core.exceptions import ValidationError
-import re
+from .models import Profile
+
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.password_validation import password_validators_help_texts
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 
 FIELD_CLASS = 'form-control border-2 shadow-sm'
 MAX_AVATAR_SIZE = 2 * 1024 * 1024
 
-class LoginFieldMixin(forms.Form):
-    login = forms.CharField(
-        min_length=3,
-        max_length=32,
-        label='Логин',
-        widget=forms.TextInput(attrs={
-            'class': FIELD_CLASS,
-            'placeholder': 'Придумайте логин (a-z, A-Z, 0-9, 3-32 симв.)'
-        })
-    )
+class UserModelBaseForm(forms.ModelForm):
+    username = forms.CharField(max_length=32, label='Логин', widget=forms.TextInput(attrs={'class': FIELD_CLASS,'placeholder': 'Придумайте логин (a-z, A-Z, 0-9, макс. 32 симв.)'}))
+    email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'class': FIELD_CLASS, 'placeholder': 'example@email.com'}))
+    nickname = forms.CharField(label='Никнейм', widget=forms.TextInput(attrs={'class': FIELD_CLASS, 'placeholder': 'Придумайте никнейм'}))
+    avatar = forms.ImageField(required=False, label='Фото профиля', widget=forms.FileInput(attrs={'class': 'form-control border-2 shadow-sm','accept': 'image/jpeg,image/png'}), help_text='Выберите изображение (JPG, PNG; до 2 МБ)')
 
-    def clean_login(self):
-        login = self.cleaned_data.get('login')
-        login_regex = r'^[a-zA-Z0-9]{3,32}$'
-
-        if not re.match(login_regex, login):
-            raise ValidationError('Логин не соответствует формату')
-
-        return login
-
-class EmailFieldMixin(forms.Form):
-    email = forms.EmailField(
-        label='Email',
-        required=True,
-        widget=forms.EmailInput(attrs={
-            'class': FIELD_CLASS,
-            'placeholder': 'example@email.com'
-        }),
-
-        error_messages={
-            'required': 'Обязательное поле',
-            'invalid': 'Введите email в указанном формате'
-        }
-    )
-
-class PasswordFieldMixin(forms.Form):
-    password = forms.CharField(
-        label='Пароль',
-        widget=forms.PasswordInput(attrs={'class': FIELD_CLASS, 'placeholder': 'Введите Ваш пароль'})
-    )
-
-    def clean_password(self):
-        password = self.cleaned_data.get('password')
-        errors = []
-
-        if not re.search(r'[a-zA-Z]', password):
-            raise ValidationError('Только латинский алфавит A-Z, a-z')
-
-        if not re.search(r'[0-9]', password):
-            errors.append('Цифры 0-9')
-
-        if not re.search(r'[A-Z]', password):
-            errors.append('Хотя бы одна заглавная')
-
-        if not re.search(r'[!@#$%^&*()_+\-=\[\]{};:\'",.<>?/\\|`~]', password):
-            errors.append('Хотя бы один спец. символ')
-
-        if errors:
-            raise ValidationError(errors)
-
-        return password
-
-class AvatarFieldMixin(forms.Form):
-    avatar = forms.ImageField(
-        required=False,
-        label='Фото профиля',
-        widget=forms.FileInput(attrs={
-            'class': 'form-control border-2 shadow-sm',
-            'accept': 'image/jpeg,image/png'
-        }),
-        help_text='Выберите изображение (JPG, PNG; до 2 МБ)',
-        error_messages={
-            'invalid': 'Загрузите корректное изображение',
-        }
-    )
+    class Meta:
+        model = User
+        fields = ['username', 'email']
 
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
@@ -92,69 +31,106 @@ class AvatarFieldMixin(forms.Form):
 
         return avatar
 
-class NicknameFieldMixin(forms.Form):
-    nickname = forms.CharField(
-        label='Никнейм',
-        required=True,
-        widget=forms.TextInput(attrs={
-            'class': FIELD_CLASS,
-            'placeholder': 'Придумайте никнейм'
-        }),
-
-        error_messages={
-            'required': 'Обязательное поле',
-        }
+class SignupForm(UserModelBaseForm):
+    password = forms.CharField(
+        label='Пароль',
+        widget=forms.PasswordInput(attrs={'class': FIELD_CLASS, 'placeholder': 'Введите Ваш пароль'}),
+        validators=[validate_password],
+        help_text=password_validators_help_texts(),
+        error_messages={'required': 'Пароль не может быть пустым'}
     )
+    password_confirm = forms.CharField(
+        label='Подтверждение пароля',
+        widget=forms.PasswordInput(attrs={'class': FIELD_CLASS, 'placeholder': 'Подтвердите пароль'})
+    )
+
+    class Meta(UserModelBaseForm.Meta):
+        fields = UserModelBaseForm.Meta.fields + ['password']
 
     def clean_nickname(self):
-        pass
+        nickname_clean = self.cleaned_data.get('nickname')
+        if Profile.objects.filter(nickname=nickname_clean).exists():
+            raise ValidationError("Этот никнейм уже занят")
+        return nickname_clean
 
-class LoginForm(PasswordFieldMixin, forms.Form):
-    login_or_email = forms.CharField(
-        min_length=3,
-        max_length=32,
-        label='Логин или Email',
-        widget=forms.TextInput(attrs={
-            'class': FIELD_CLASS,
-            'placeholder': 'Введите Ваш логин или email'
-        })
+    def clean(self):
+        cleaned_data = super().clean()
+        password_clean = cleaned_data.get('password')
+        password_conf_clean = cleaned_data.get('password_confirm')
+
+        if password_clean and password_conf_clean and password_clean != password_conf_clean :
+            self.add_error('password_confirm', 'Пароли не совпадают')
+
+        return cleaned_data
+
+    def save(self):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+        user.save()
+
+        Profile.objects.create(user=user, nickname=self.cleaned_data['nickname'], avatar=self.cleaned_data['avatar'])
+
+        return user
+
+    field_order = ['username', 'email', 'nickname', 'password', 'password_confirm', 'avatar']
+
+class SettingsForm(UserModelBaseForm):
+    def __init__(self, *args, **kwargs):
+        self.user_instance = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+
+    def clean_nickname(self):
+        nickname_clean = self.cleaned_data.get('nickname')
+        if not nickname_clean:
+            raise ValidationError('Заполните никнейм')
+        if Profile.objects.filter(nickname=nickname_clean).exclude(user=self.user_instance).exists():
+            raise ValidationError('Этот никнейм уже занят')
+        return nickname_clean
+
+    def save(self):
+        user = super().save()
+        profile = user.profile
+        profile.nickname = self.cleaned_data.get('nickname')
+
+        if self.cleaned_data.get('avatar'):
+            profile.avatar = self.cleaned_data.get('avatar')
+
+        profile.save()
+        return user
+
+class LoginForm(forms.Form):
+    username = forms.CharField(
+        label="Логин",
+        widget=forms.TextInput(attrs={'class': FIELD_CLASS, 'placeholder': 'your_login'})
     )
-
+    password = forms.CharField(
+        label="Пароль",
+        widget=forms.PasswordInput(attrs={'class': FIELD_CLASS, 'placeholder': 'your_password123'})
+    )
     remember_me = forms.BooleanField(
         required=False,
         label='Запомнить меня',
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
 
-    field_order = ['login_or_email', 'password']
-
-    def clean_password(self):
-        return self.cleaned_data.get('password')
-
-
-class SignupForm(LoginFieldMixin, EmailFieldMixin, NicknameFieldMixin, PasswordFieldMixin, AvatarFieldMixin, forms.Form):
-    password_confirm = forms.CharField(
-        min_length=8,
-        required=True,
-        label='Подтвердите пароль',
-        widget=forms.PasswordInput(attrs={
-            'class': FIELD_CLASS,
-            'placeholder': 'Повторите пароль',
-        })
-    )
-
-    field_order = ['login', 'email', 'nickname', 'password', 'password_confirm', 'avatar']
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        self.authenticated_user = None
+        super().__init__(*args, **kwargs)
 
     def clean(self):
         cleaned_data = super().clean()
-        password = cleaned_data.get('password')
-        password_confirm = cleaned_data.get('password_confirm')
 
-        if password and password_confirm and password != password_confirm:
-            raise ValidationError('Пароли не совпадают')
+        username_clean = self.cleaned_data.get('username')
+        password_clean = self.cleaned_data.get('password')
+
+        if username_clean and password_clean:
+            self.authenticated_user = authenticate(username=username_clean, password=password_clean)
+
+            if self.authenticated_user is None:
+                raise ValidationError('Неверный логин или пароль')
 
         return cleaned_data
 
-
-class SettingsForm(LoginFieldMixin, NicknameFieldMixin, EmailFieldMixin, AvatarFieldMixin, forms.Form):
-    field_order = ['login', 'email', 'nickname', 'avatar']
+    def get_user(self):
+        return self.authenticated_user
