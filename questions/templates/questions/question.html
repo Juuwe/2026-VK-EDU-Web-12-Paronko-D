@@ -22,18 +22,24 @@
     </div>
 
     <div class="mb-5">
-        <form action="{% url 'ask' %}" method="POST">
-            {% csrf_token %}
-            <h5 class="mb-3">Ваш ответ</h5>
+        {% if user.is_authenticated %}
+            <form action="" method="POST">
+                {% csrf_token %}
+                <h5 class="mb-3">Ваш ответ</h5>
 
-            {% include 'partials/form_field.html' with type="textarea" field_id="answer_input" placeholder="Напишите решение здесь..." required=True %}
+                {% include 'partials/form_field.html' with field=form.content %}
 
-            <div class="row justify-content-end mt-4">
-                <div class="col-12 col-md-4 col-lg-3">
-                    {% include 'partials/form_button.html' with text='Ответить' %}
+                <div class="row justify-content-end mt-4">
+                    <div class="col-12 col-md-4 col-lg-3">
+                        {% include 'partials/form_button.html' with text='Ответить' %}
+                    </div>
                 </div>
+            </form>
+        {% else %}
+            <div class="alert alert-info">
+                <a href="{% url 'login' %}">Войдите</a>, чтобы оставить ответ.
             </div>
-        </form>
+        {% endif %}
     </div>
 </div>
 {% if page_obj.paginator.num_pages > 1 %}

@@ -5,24 +5,24 @@
 {% endblock %}
 
 {% block content %}
-<div class="container py-4 my-auto mx-auto" style="max-width: 900px;">
+<div class="container py-2 mx-auto" style="max-width: 900px;">
     <form action="{% url 'ask' %}" method="POST">
         {% csrf_token %}
         <h3 class="h3 fw-bold mb-4">Новый вопрос</h3>
 
         <div class="d-flex flex-column gap-3">
             <div>
-                {% include 'partials/form_field.html' with field_id="title" label="Тема" placeholder="Введите тему..." required=True %}
+                {% include 'partials/form_field.html' with field=form.title label="Тема" placeholder="Введите тему..." %}
                 <div class="form-text">0/50</div>
             </div>
 
             <div>
-                {% include 'partials/form_field.html' with field_id="body" type="textarea" label="Вопрос" rows=8 placeholder="Сформулируйте вопрос..." required=True %}
+                {% include 'partials/form_field.html' with field=form.content label="Вопрос" placeholder="Сформулируйте вопрос..." %}
                 <div class="form-text">0/1000</div>
             </div>
 
             <div>
-                {% include 'partials/form_field.html' with field_id="tags" label="Теги" placeholder="Укажите теги (макс. 5)" %}
+                {% include 'partials/form_field.html' with field=form.tags label="Теги" placeholder="Укажите теги (макс. 5)" %}
                 <div class="form-text">0/5</div>
                 <div class="form-text">Используйте запятые для разделения тегов</div>
             </div>

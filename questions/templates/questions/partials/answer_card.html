@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class="card shadow-sm">
+<div class="card shadow-sm" id="answer-{{ answer.id }}">
     <div class="card-body">
         <div class="row mb-2">
 
@@ -15,7 +15,7 @@
             {% include 'questions/partials/like_widget.html' with likes=answer.rating %}
 
             <div class="form-check">
-                <input class="form-check-input" {% if answer.checkbox_value %}checked{% endif %} type="checkbox" id="check">
+                <input class="form-check-input" {% if answer.is_correct %}checked{% endif %} {% if not user.is_authenticated %}disabled{% endif %} type="checkbox" id="check">
                 <label class="form-check-label small" for="check">Правильный!</label>
             </div>
 
