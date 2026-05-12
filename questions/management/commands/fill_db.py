@@ -172,3 +172,11 @@ class Command(BaseCommand):
 
         answers_counts = Answer.objects.filter(question_id=OuterRef('pk')).values('question_id').annotate(cnt=Count('id')).values('cnt')
         Question.objects.update(answers_count=Coalesce(Subquery(answers_counts), 0))
+
+        print('Обновляем questions_count у тегов...')
+        tag_counts = Question.tags.through.objects.filter(tag_id=OuterRef('pk')).values('tag_id').annotate(cnt=Count('question_id')).values('cnt')
+        Tag.objects.update(questions_count=Coalesce(Subquery(tag_counts), 0))
+
+        print('Обновляем счетчик правильных ответов у профилей...')
+        correct_counts = Answer.objects.filter(author_id=OuterRef('pk'), is_correct=True).values('author_id').annotate(cnt=Count('id')).values('cnt')
+        Profile.objects.update(correct_answers_count=Coalesce(Subquery(correct_counts), 0))
