@@ -8,7 +8,7 @@ class QuestionAdmin(admin.ModelAdmin):
     list_filter = ('created_at', 'tags')
 
     raw_id_fields = ('author',)
-    list_select_related = ('author',)
+    list_select_related = ('author', 'author__user')
     list_prefetch_related = ('tags')
 
     class AnswerInline(admin.TabularInline):
@@ -53,4 +53,7 @@ class AnswerLikeAdmin(admin.ModelAdmin):
     raw_id_fields = ('user', 'answer')
     list_select_related = ('user', 'answer')
 
-admin.site.register(Tag)
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('name', 'questions_count',)
+    search_fields = ('name',)
