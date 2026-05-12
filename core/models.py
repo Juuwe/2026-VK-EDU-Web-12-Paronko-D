@@ -8,9 +8,10 @@ class Profile(models.Model):
     user = models.OneToOneField("auth.User", verbose_name="Аккаунт", on_delete=models.CASCADE, related_name='profile')
 
     nickname = models.CharField(verbose_name="Никнейм", max_length=50, unique=True)
-    avatar = models.ImageField(verbose_name="Аватар", upload_to="", null=True)
-    bio = models.TextField(verbose_name="О себе", max_length=500, null=True)
+    avatar = models.ImageField(verbose_name="Аватар", upload_to="", null=True, blank=True)
     created_at = models.DateTimeField(verbose_name="Дата и время создания", default=timezone.now)
+
+    correct_answers_count = models.PositiveIntegerField(verbose_name="Кол-во правильных ответов", default=0)
 
     class Meta:
         verbose_name = "Профиль"
