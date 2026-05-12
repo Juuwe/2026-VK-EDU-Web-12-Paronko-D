@@ -1,30 +1,15 @@
-<div>
+<div class="mb-2">
     {% if label %}
-        <label for="{{ field_id }}" class="form-label fw-semibold">{{ label }}</label>
+        <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ label }}</label>
     {% endif %}
 
-    {% if type == 'textarea' %}
-        <textarea id="{{ field_id }}"
-                  name="{{ name|default:field_id }}"
-                  class="form-control border-2 shadow-sm"
-                  style="resize: none;"
-                  rows="{{ rows|default:5 }}"
-                  placeholder="{{ placeholder }}"
-                  {% if required %}required{% endif %}>{{ value }}</textarea>
-    {% else %}
-        <input type="{{ type|default:'text' }}"
-                id="{{ field_id }}"
-                name="{{ name|default:field_id }}"
-                class="form-control border-2 shadow-sm {% if error %} is-invalid {% endif %}"
-                placeholder="{{ placeholder }}"
-                value="{{ value }}"
-                {% if required %}required{% endif %}
-                {% if pattern %}pattern="{{ pattern }}"{% endif %}>
+    {{ field }}
 
-        {% if error %}
-            <div class="invalid-feedback d-block">
+    {% if field.errors %}
+        <div class="invalid-feedback d-block">
+            {% for error in field.errors %}
                 {{ error }}
-            </div>
-        {% endif %}
+            {% endfor %}
+        </div>
     {% endif %}
 </div>
