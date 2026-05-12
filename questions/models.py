@@ -2,12 +2,15 @@ from django.utils import timezone
 from django.db import models
 
 from .managers import QuestionManager, AnswerManager, TagManager
-from questions import validators
+from . import validators
 from django.db.models import F
+from django.urls import reverse
 
 class Tag(models.Model):
     objects = TagManager()
+
     name = models.CharField(verbose_name="Имя тега", max_length=25, unique=True)
+    questions_count = models.PositiveBigIntegerField(verbose_name="Кол-во вопросов", default=0)
 
     class Meta:
         verbose_name = "Тег"
@@ -24,9 +27,9 @@ class Question(models.Model):
     author = models.ForeignKey("core.Profile", verbose_name="Создатель вопроса", on_delete=models.SET_NULL, null=True, related_name="questions")
     title = models.CharField(verbose_name="Тема вопроса", max_length=100)
     content = models.TextField(verbose_name="Вопрос", max_length=1000) # уточнить maxlength
-    rating = models.IntegerField(verbose_name="Рейтинг", default=0)
+    rating = models.IntegerField(verbose_name="Рейтинг", default=0, db_index=True)
     answers_count = models.PositiveIntegerField(verbose_name="Кол-во ответов", default=0)
-    created_at = models.DateTimeField(verbose_name="Дата и время создания", default=timezone.now)
+    created_at = models.DateTimeField(verbose_name="Дата и время создания", default=timezone.now, db_index=True)
     tags = models.ManyToManyField("questions.Tag", verbose_name="Теги вопроса", related_name="questions")
 
     class Meta:
@@ -49,6 +52,9 @@ class Question(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('question', kwargs={'pk': self.pk})
 
 
 class Answer(models.Model):
@@ -80,7 +86,8 @@ class Answer(models.Model):
     def clean(self):
         super().clean()
 
-        if not self.question:
+        question = getattr(self, 'question', None)
+        if not question:
             return
 
         validators.validate_created_date(self.question.created_at, self.created_at, 'Answer.created_at: Ответ не может быть создан раньше вопроса')
@@ -94,20 +101,12 @@ class Answer(models.Model):
         self.save(update_field=['rating'])
 
     def save(self, *args, **kwargs):
-        is_new = self.pk is None
         self.full_clean()
 
         if self.is_correct:
             Answer.objects.filter(question=self.question, is_correct=True).exclude(pk=self.pk).update(is_correct=False)
-
+            
         super().save(*args, **kwargs)
-
-        if is_new:
-            Question.objects.filter(pk=self.question_id).update(answers_count=F('answers_count') + 1)
-
-    def delete(self, *args, **kwargs):
-        Question.objects.filter(pk=self.question_id).update(answers_count=F('answers_count') - 1)
-        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f"Ответ {self.pk}: {self.content[:50]}..."

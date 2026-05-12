@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import Count
 
 class QuestionManager(models.Manager):
     def hot(self):
@@ -14,4 +13,4 @@ class AnswerManager(models.Manager):
 
 class TagManager(models.Manager):
     def popular(self, limit=20):
-        return self.annotate(question_count=Count('questions')).order_by('-question_count')[:limit]
+        return self.order_by('-questions_count')[:limit]
