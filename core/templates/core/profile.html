@@ -16,9 +16,7 @@
     </div>
 
     <div class="col">
-        <p class="fw-bold mb-1">Username</p>
-        <p class="text-muted mb-0">Bio</p>
-        <p class="text-muted small mb-0">Socials</p>
+        <p class="fw-bold mb-1"> {{ profile.user.username }} </p>
     </div>
 </div>
 
@@ -31,24 +29,24 @@
                 <div class="d-flex gap-10">
                     <div class="d-flex flex-column gap-4">
                         <div>
-                            <h5 class="fw-bold mb-0">{{ profile.rep }}</h5>
+                            <h5 class="fw-bold mb-0">{{ profile.reputation }}</h5>
                             <span class="text-muted small">Репутация</span>
                         </div>
 
                         <div>
-                            <h5 class="fw-bold mb-0"> {{ profile.answers }} </h5>
+                            <h5 class="fw-bold mb-0"> {{ profile.answers_count }} </h5>
                             <span class="text-muted small">Ответов</span>
                         </div>
                     </div>
 
                     <div class="d-flex flex-column gap-4">
                         <div>
-                            <h5 class="fw-bold mb-0"> {{ profile.views }} </h5>
-                            <span class="text-muted small">Просмотры</span>
+                            <h5 class="fw-bold mb-0"> {{ profile.created_at|date:"d.m.Y" }} </h5>
+                            <span class="text-muted small">Дата создания</span>
                         </div>
 
                         <div>
-                            <h5 class="fw-bold mb-0"> {{ profile.questions}} </h5>
+                            <h5 class="fw-bold mb-0"> {{ profile.questions_count }} </h5>
                             <span class="text-muted small">Вопросов</span>
                         </div>
                     </div>
@@ -69,7 +67,7 @@
 
                         <div>
                             <span class="fw-bold">
-                                {{ tag.count }}
+                                {{ tag.tags_count }}
                             </span>
                             <span class="text-muted small">Постов</span>
                         </div>

@@ -34,13 +34,26 @@
             {{ field }}
 
             {% if field.name == 'password' %}
-                {% include 'core/partials/password_help.html' %}
+                {% include 'core/partials/password_help.html' with field=field %}
             {% endif %}
 
             {% if field.help_text %}
-                <small class="form-text text-muted d-block mt-2">
-                    {{ field.help_text|safe }}
-                </small>
+                <div class="form-text text-muted mt-2">
+                    {% if field.name == 'password' and field.help_text|dictsort:0 %}
+                        {# Если это пароль и у нас есть список подсказок #}
+                        <ul class="list-unstyled small mb-0">
+                            {% for info in field.help_text %}
+                                <li class="d-flex align-items-start gap-2 mb-1">
+                                    <span class="text-primary">•</span>
+                                    <span>{{ info }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        {# Для всех остальных полей (строковый help_text) #}
+                        <small class="d-block">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                </div>
             {% endif %}
 
              {% if field.errors %}

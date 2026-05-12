@@ -17,6 +17,14 @@
 
 {% block form_content %}
 
+{% if form.non_field_errors %}
+    <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+            {{ error }}
+        {% endfor %}
+    </div>
+{% endif %}
+
 <div class="d-flex flex-column gap-3">
     {% for field in form %}
         {% if field.field.widget.input_type == 'checkbox' %}
