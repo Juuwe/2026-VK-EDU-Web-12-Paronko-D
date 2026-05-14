@@ -1,12 +1,13 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.generic import View, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import Question
+from .models import Question, QuestionLike, AnswerLike, Answer
 from .forms import AskForm, AnswerForm
 import math
+from django.http import JsonResponse
 
 def paginate(queryset, request, per_page=20):
     page_number = request.GET.get('page', 1)
@@ -26,7 +27,7 @@ class BaseQuestionListView(View):
     template_name = None
 
     def get_queryset(self):
-        return Question.objects.select_related('author').prefetch_related('tags').all()
+        return Question.objects.with_user_vote(self.request.user).select_related('author').prefetch_related('tags').all()
 
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -46,13 +47,13 @@ class HotView(BaseQuestionListView):
     template_name = 'questions/hot.html'
 
     def get_queryset(self):
-        return Question.objects.hot().select_related('author').prefetch_related('tags')
+        return Question.objects.hot().with_user_vote(self.request.user).select_related('author').prefetch_related('tags')
 
 class ByTagView(BaseQuestionListView):
     template_name = 'questions/tag.html'
 
     def get_queryset(self):
-        return Question.objects.tag(self.kwargs['tag_name']).select_related('author').prefetch_related('tags')
+        return Question.objects.tag(self.kwargs['tag_name']).with_user_vote(self.request.user).select_related('author').prefetch_related('tags')
 
     def get_extra_context(self):
         return {'tag_name': self.kwargs['tag_name']}
@@ -63,12 +64,13 @@ class DetailQuestionView(DetailView):
     per_page = 5
 
     def get_queryset(self):
-        return super().get_queryset().select_related('author').prefetch_related('tags')
+        return super().get_queryset().with_user_vote(self.request.user).select_related('author').prefetch_related('tags')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
 
-        answers_queryset = self.object.answers.all().select_related('author')
+        answers_queryset = self.object.answers.with_user_vote(user).select_related('author').best()
         page_obj = paginate(answers_queryset, self.request, per_page=self.per_page)
         context['page_obj'] = page_obj
 
@@ -99,8 +101,6 @@ class DetailQuestionView(DetailView):
 
         return self.render_to_response(self.get_context_data(form=form))
 
-
-
 class AskQuestionView(LoginRequiredMixin, CreateView):
     model = Question
     form_class = AskForm
@@ -110,3 +110,48 @@ class AskQuestionView(LoginRequiredMixin, CreateView):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+
+class BaseLikeView(View):
+    model = None
+    like_model = None
+
+    def post(self, request, object_id):
+        if not request.user.is_authenticated:
+            return JsonResponse({'status': 'err', 'error': 'Auth required'}, status=401)
+
+        obj = get_object_or_404(self.model, pk=object_id)
+
+        like_value = int(request.POST.get('value'))
+
+        if abs(like_value) != 1:
+            return JsonResponse({'status': 'err', 'error': 'Invalid value'}, status=400)
+
+        action = self.like_model.objects.add_vote(user=request.user.profile, object=obj, new_value=like_value)
+
+        return JsonResponse({
+            'new_rating': obj.rating,
+            'action': action,
+            'status': 'ok'
+        })
+
+class QuestionLikeView(BaseLikeView):
+    model = Question
+    like_model = QuestionLike
+
+class AnswerLikeView(BaseLikeView):
+    model = Answer
+    like_model = AnswerLike
+
+
+class MarkCorrectView(LoginRequiredMixin, View):
+    def post(self, request, answer_id):
+        is_correct, error = Answer.objects.toggle_correct(
+            user=request.user,
+            answer_id=answer_id
+        )
+
+        if error:
+            status_code = 404 if "not exist" in error else 403
+            return JsonResponse({'status': 'err', 'error': error}, status=status_code)
+
+        return JsonResponse({'status': 'ok', 'is_correct': is_correct})
