@@ -25,30 +25,33 @@ def update_tag_questinos_count(sender, instance, action, pk_set, **kwargs):
             questions_count=F('questions_count') - 1
         )
 
-@receiver(post_save, sender=QuestionLike)
-@receiver(post_save, sender=AnswerLike)
-def update_rating_on_save(sender, instance, created, **kwargs):
-    if created:
-        if isinstance(instance, QuestionLike):
-            Question.objects.filter(pk=instance.question_id).update(
-                rating=F('rating') + instance.value
-            )
-        elif isinstance(instance, AnswerLike):
-            Answer.objects.filter(pk=instance.answer_id).update(
-                rating=F('rating') + instance.value
-            )
+# @receiver(post_save, sender=QuestionLike)
+# @receiver(post_save, sender=AnswerLike)
+# def update_rating_on_save(sender, instance, created, **kwargs):
+#     target_field = 'question' if hasattr(instance, 'question') else 'answer'
+#     target_obj = getattr(instance, target_field)
+#     model_class = target_obj.__class__
 
-@receiver(post_delete, sender=QuestionLike)
-@receiver(post_delete, sender=AnswerLike)
-def update_rating_on_delete(sender, instance, **kwargs):
-    if isinstance(instance, QuestionLike):
-        Question.objects.filter(pk=instance.question_id).update(
-            rating=F('rating') - instance.value
-        )
-    elif isinstance(instance, AnswerLike):
-        Answer.objects.filter(pk=instance.answer_id).update(
-            rating=F('rating') - instance.value
-        )
+#     if created:
+#         model_class.objects.filter(pk=target_obj.pk).update(
+#             rating=F('rating') + instance.value
+#         )
+#     else:
+#         model_class.objects.filter(pk=target_obj.pk).update(
+#             rating=F('rating') + (instance.value * 2)
+#         )
+
+# @receiver(post_delete, sender=QuestionLike)
+# @receiver(post_delete, sender=AnswerLike)
+# def update_rating_on_delete(sender, instance, **kwargs):
+#     if isinstance(instance, QuestionLike):
+#         Question.objects.filter(pk=instance.question_id).update(
+#             rating=F('rating') - instance.value
+#         )
+#     elif isinstance(instance, AnswerLike):
+#         Answer.objects.filter(pk=instance.answer_id).update(
+#             rating=F('rating') - instance.value
+#         )
 
 @receiver(pre_save, sender=Answer)
 def track_answer_status_change(sender, instance, **kwargs):
