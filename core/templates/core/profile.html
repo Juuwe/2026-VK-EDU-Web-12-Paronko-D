@@ -12,7 +12,11 @@
 {% block profile_content %}
 <div class="row align-items-center g-3 mt-3 mb-4">
     <div class="col-auto">
-        <img src="" width="128" height="128" class="border border-1 rounded-circle">
+        {% if user.profile.avatar %}
+            <img src="{{ user.profile.avatar.url }}" alt="Avatar" width="128" height="128" class="border border-1 rounded-circle">
+        {% else %}
+            <img src="{{ STATIC_URL }}img/avatar-default.svg" alt="Default Avatar" width="128" height="128" class="border border-1 rounded-circle">
+        {% endif %}
     </div>
 
     <div class="col">

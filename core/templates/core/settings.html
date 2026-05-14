@@ -22,7 +22,11 @@
                             {{ form.avatar.label }}
                         </label>
 
-                        <img src="" width="128" height="128" class="border rounded-circle mb-2">
+                        {% if user.profile.avatar %}
+                            <img src="{{ user.profile.avatar.url }}" alt="Avatar" width="128" height="128" class="border border-1 rounded-circle mb-2">
+                        {% else %}
+                            <img src="{{ STATIC_URL }}img/avatar-default.svg" alt="Default Avatar" width="128" height="128" class="border border-1 rounded-circle mb-2">
+                        {% endif %}
 
                         {{ form.avatar }}
 
