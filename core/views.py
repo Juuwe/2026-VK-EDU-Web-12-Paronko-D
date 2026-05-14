@@ -8,9 +8,6 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth.models import User
 from .models import Profile
 
-PROFILE = {"rep": 40, "answers": 23, "views": "115k", "questions": 30,
-            "tags": [{"name": f'tag{i}', "count": 3} for i in range(5)]}
-
 class LoginView(FormView):
     form_class = LoginForm
     template_name = 'core/login.html'
