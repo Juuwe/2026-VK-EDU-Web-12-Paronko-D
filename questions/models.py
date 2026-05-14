@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.db import models
 
-from .managers import QuestionManager, AnswerManager, TagManager
+from .managers import QuestionQuerySet, AnswerManager, TagManager, LikeManager
 from . import validators
 from django.db.models import F
 from django.urls import reverse
@@ -22,7 +22,7 @@ class Tag(models.Model):
         return self.name
 
 class Question(models.Model):
-    objects = QuestionManager()
+    objects = QuestionQuerySet.as_manager()
 
     author = models.ForeignKey("core.Profile", verbose_name="Создатель вопроса", on_delete=models.SET_NULL, null=True, related_name="questions")
     title = models.CharField(verbose_name="Тема вопроса", max_length=100)
@@ -102,16 +102,14 @@ class Answer(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-
-        if self.is_correct:
-            Answer.objects.filter(question=self.question, is_correct=True).exclude(pk=self.pk).update(is_correct=False)
-            
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Ответ {self.pk}: {self.content[:50]}..."
 
 class Like(models.Model):
+    objects = LikeManager()
+
     user = models.ForeignKey("core.Profile", verbose_name="Автор лайка", on_delete=models.SET_NULL, null=True, related_name="%(class)s_votes")
     created_at = models.DateTimeField(verbose_name="Дата и время создания", default=timezone.now)
     value = models.SmallIntegerField(choices=[(1, 'Лайк'), (-1, 'Дизлайк')], default=1)
