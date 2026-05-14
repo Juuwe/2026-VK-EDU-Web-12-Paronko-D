@@ -22,8 +22,12 @@
                     <div class="text-end d-none d-sm-block">
                         <a href="{% url 'profile' %}" class="fw-bold small d-block text-dark text-decoration-none">{{ user.username }}</a>
                     </div>
-                    <img src="{% static 'img/avatar-default.svg' %}" width="32" height="32" class="rounded-circle border">
 
+                    {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="Avatar" width="32" height="32" class="rounded-circle border">
+                    {% else %}
+                        <img src="{{ STATIC_URL }}img/avatar-default.svg" alt="Default Avatar" width="32" height="32" class="rounded-circle border">
+                    {% endif %}
 
                     <div class="d-flex flex-column border-start ps-3" style="font-size: 13px;">
                         <a href="{% url 'settings' %}" class="text-muted text-decoration-none">Настройки</a>
