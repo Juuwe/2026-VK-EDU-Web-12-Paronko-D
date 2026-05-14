@@ -1,7 +1,22 @@
-<div class="d-flex align-items-center justify-content-between border rounded-4 p-1 bg-light" style="min-width: 80px;">
-    <span class="fw-bold small px-2">{{ likes }}</span>
+<div class="js-vote-container d-flex align-items-center justify-content-between border rounded-4 p-1 bg-light" style="min-width: 80px;"
+     data-id="{{ obj.pk }}"
+     data-type="{{ obj_type }}">
+
+    <span class="js-rating-value fw-bold small px-2">{{ obj.rating }}</span>
+
     <div class="d-flex flex-column">
-        <button class="btn btn-sm btn-link text-dark p-0 m-0 lh-1" {% if not user.is_authenticated %}disabled title="Нужна авторизация"{% endif %}><i class="bi bi-caret-up-fill"></i></button>
-        <button class="btn btn-sm btn-link text-dark p-0 m-0 lh-1" {% if not user.is_authenticated %}disabled title="Нужна авторизация"{% endif %}><i class="bi bi-caret-down-fill"></i></button>
+        <button class="js-vote-btn btn btn-sm btn-link text-dark p-0 m-0 lh-1"
+                data-value="1">
+
+            <i class="js-icon-like bi bi-caret-up-fill {% if obj.user_vote == 1 %}text-success{% endif %}"></i>
+
+        </button>
+        <button class="js-vote-btn btn btn-sm btn-link text-dark p-0 m-0 lh-1"
+                data-value="-1">
+
+            <i class="js-icon-dislike bi bi-caret-down-fill {% if obj.user_vote == -1 %}text-danger{% endif %}"></i>
+
+        </button>
     </div>
+
 </div>
