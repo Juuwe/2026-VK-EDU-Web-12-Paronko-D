@@ -7,29 +7,20 @@ from django.contrib.auth.password_validation import password_validators_help_tex
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
+from django.core.validators import FileExtensionValidator
+from .validators import validate_file_size
+
 FIELD_CLASS = 'form-control border-2 shadow-sm'
-MAX_AVATAR_SIZE = 2 * 1024 * 1024
 
 class UserModelBaseForm(forms.ModelForm):
     username = forms.CharField(max_length=32, label='Логин', widget=forms.TextInput(attrs={'class': FIELD_CLASS,'placeholder': 'Придумайте логин (a-z, A-Z, 0-9, макс. 32 симв.)'}))
     email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'class': FIELD_CLASS, 'placeholder': 'example@email.com'}))
     nickname = forms.CharField(label='Никнейм', widget=forms.TextInput(attrs={'class': FIELD_CLASS, 'placeholder': 'Придумайте никнейм'}))
-    avatar = forms.ImageField(required=False, label='Фото профиля', widget=forms.FileInput(attrs={'class': 'form-control border-2 shadow-sm','accept': 'image/jpeg,image/png'}), help_text='Выберите изображение (JPG, PNG; до 2 МБ)')
+    avatar = forms.ImageField(required=False, label='Фото профиля', widget=forms.FileInput(attrs={'class': 'form-control border-2 shadow-sm','accept': 'image/jpeg,image/png'}), help_text='Выберите изображение (JPG, PNG; до 2 МБ)', validators=[FileExtensionValidator(allowed_extensions=['png', 'jpg']), validate_file_size])
 
     class Meta:
         model = User
         fields = ['username', 'email']
-
-    def clean_avatar(self):
-        avatar = self.cleaned_data.get('avatar')
-
-        if not avatar:
-            return avatar
-
-        if avatar.size > MAX_AVATAR_SIZE:
-            raise ValidationError('Размер файла не должен превышать 2 МБ')
-
-        return avatar
 
 class SignupForm(UserModelBaseForm):
     password = forms.CharField(
