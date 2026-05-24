@@ -81,7 +81,7 @@ class Answer(models.Model):
             )
         ]
 
-        ordering = ['-is_correct', '-created_at']
+        ordering = ['-is_correct', 'created_at']
 
     def clean(self):
         super().clean()

@@ -6,10 +6,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - .env.docker
-    environment:
-      POSTGRES_DB: ${DB_NAME:-vk_edu_web_paronko_d_db}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres_password}
     ports:
       - "5432:5432"
     healthcheck:
@@ -28,7 +24,7 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
-      - ./media:/app/media
+      - django_media:/app/media
     depends_on:
       db:
         condition: service_healthy
