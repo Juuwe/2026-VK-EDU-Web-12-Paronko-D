@@ -1,4 +1,18 @@
 services:
+  django-base: &django-base
+    build: .
+    env_file:
+    - .env.docker
+    volumes:
+    - .:/app
+    - django_media:/app/media
+    networks:
+    - app_network
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
   db:
     image: postgres:17
     container_name: postgres_db
@@ -16,24 +30,36 @@ services:
     networks:
       - app_network
 
-  web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    container_name: web_app
+  redis:
+    image: redis:7-alpine
+    container_name: redis_broker
     ports:
-      - "8000:8000"
-    volumes:
-      - .:/app
-      - django_media:/app/media
-    depends_on:
-      db:
-        condition: service_healthy
-    env_file:
-      - .env.docker
-    environment:
-      - ENV_FILE=.env.docker
+      - "6379:6379"
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  web:
+    <<: *django-base
+    container_name: web_app
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+
+  celery:
+    <<: *django-base
+    container_name: celery_worker
+    # Запуск воркера. application - это папка, где лежит твой celery.py
+    command: celery -A application worker -l INFO
+
+  celery-beat:
+    <<: *django-base
+    container_name: celery_beat
+    command: celery -A application beat -l INFO
 
 networks:
   app_network:

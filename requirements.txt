@@ -6,3 +6,10 @@ psycopg2-binary==2.9.9
 django-debug-toolbar==6.3.0
 python-dotenv
 Faker==40.15.0
+
+celery
+redis
+django-redis
+redbeat
+
+pycent
