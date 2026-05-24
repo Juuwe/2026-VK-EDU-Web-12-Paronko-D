@@ -3,7 +3,6 @@ from django.db import models
 
 from .managers import QuestionQuerySet, AnswerManager, TagManager, LikeManager
 from . import validators
-from django.db.models import F
 from django.urls import reverse
 
 class Tag(models.Model):

@@ -94,6 +94,27 @@ DATABASES = {
     }
 }
 
+REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
+REDIS_PORT = os.getenv('REDIS_PORT', '6379')
+REDIS_CACHE_DB = os.getenv('REDIS_CACHE_DB', '0')
+REDIS_BROKER_DB = os.getenv('REDIS_BROKER_DB', '1')
+REDIS_BEAT_DB = os.getenv('REDIS_BEAT_DB', '2')
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_CACHE_DB}",
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "TIMEOUT": 60 * 10,
+    }
+}
+
+CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_BROKER_DB}"
+CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_BEAT_DB}"
+
+CELERY_BEAT_SCHEDULER = "redbeat.RedBeatScheduler"
+CELERY_REDBEAT_REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_BEAT_DB}"
+
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 

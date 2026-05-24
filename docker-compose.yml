@@ -1,5 +1,5 @@
 services:
-  django-base: &django-base
+  x-django-base: &django-base
     build: .
     env_file:
     - .env.docker
