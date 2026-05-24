@@ -81,7 +81,7 @@ class Answer(models.Model):
             )
         ]
 
-        ordering = ['-is_correct', '-created_at']
+        ordering = ['-is_correct', 'created_at']
 
     def clean(self):
         super().clean()
@@ -105,7 +105,7 @@ class Answer(models.Model):
 
         if self.is_correct:
             Answer.objects.filter(question=self.question, is_correct=True).exclude(pk=self.pk).update(is_correct=False)
-            
+
         super().save(*args, **kwargs)
 
     def __str__(self):
