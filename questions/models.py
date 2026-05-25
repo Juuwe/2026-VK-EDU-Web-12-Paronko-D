@@ -65,7 +65,6 @@ class Question(models.Model):
     def get_absolute_url(self):
         return reverse('question', kwargs={'pk': self.pk})
 
-``
 class Answer(models.Model):
     objects = AnswerManager()
 
