@@ -14,3 +14,5 @@ redbeat
 
 PyJWT==2.8.0
 cent==5.0.0
+
+gunicorn==22.0.0

@@ -1,12 +1,23 @@
 FROM python:3.12-slim
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN addgroup --system webgroup && adduser --system --ingroup webgroup webuser
+
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY src/requirements.txt .
 
-COPY . .
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 8000
+COPY src/ .
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN chown -R webuser:webgroup /app
+
+USER webuser
+
+EXPOSE 8000 8081
+
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "application.wsgi:application"]
