@@ -10,7 +10,7 @@ register = template.Library()
 def get_popular_tags():
     popular_tags_cache = cache.get(settings.CACHE_KEY_POPULAR_TAGS)
     if popular_tags_cache is None:
-        popular_tags_cache = list(Tag.objects.popular())
+        popular_tags_cache = list(Tag.objects.get_popular_for_cache())
         cache.set(settings.CACHE_KEY_POPULAR_TAGS, popular_tags_cache, settings.SIDEBAR_CACHE_TTL)
 
     return popular_tags_cache
@@ -18,7 +18,7 @@ def get_popular_tags():
 def get_best_members():
     best_members_cache = cache.get(settings.CACHE_KEY_BEST_MEMBERS)
     if best_members_cache is None:
-        best_members_cache = list(Profile.objects.get_best())
+        best_members_cache = list(Profile.objects.get_best_for_cache())
         cache.set(settings.CACHE_KEY_BEST_MEMBERS, best_members_cache, settings.SIDEBAR_CACHE_TTL)
 
     return best_members_cache
