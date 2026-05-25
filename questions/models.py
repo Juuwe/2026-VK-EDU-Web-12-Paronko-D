@@ -1,9 +1,11 @@
 from django.utils import timezone
 from django.db import models
-
 from .managers import QuestionQuerySet, AnswerManager, TagManager, LikeManager
 from . import validators
 from django.urls import reverse
+
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVector
 
 class Tag(models.Model):
     objects = TagManager()
@@ -37,6 +39,14 @@ class Question(models.Model):
 
         ordering = ['-created_at']
 
+        indexes = [
+            GinIndex(
+                name='question_search_gin_idx',
+                fields=['title', 'text'],
+                opclasses=['gin_trgm_ops', 'gin_trgm_ops']  # Требуется расширение pg_trgm
+            )
+        ]
+
     def __str__(self):
         return f"Вопрос #{self.pk}: {self.title}"
 
@@ -55,7 +65,7 @@ class Question(models.Model):
     def get_absolute_url(self):
         return reverse('question', kwargs={'pk': self.pk})
 
-
+``
 class Answer(models.Model):
     objects = AnswerManager()
 

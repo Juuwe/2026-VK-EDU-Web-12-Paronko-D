@@ -50,7 +50,7 @@ class AnswerQuerySet(models.QuerySet):
         )
 
     def best(self):
-        return self.order_by('-is_correct', '-rating', '-created_at')
+        return self.order_by('-is_correct', '-rating', 'created_at')
 
 class AnswerManager(models.Manager):
     def get_queryset(self):
@@ -84,6 +84,10 @@ class AnswerManager(models.Manager):
 class TagManager(models.Manager):
     def popular(self, limit=20):
         return self.order_by('-questions_count')[:limit]
+
+    def get_popular_for_cache(self, limit=20):
+        tags = self.popular(limit=limit)
+        return [{'id': tag.id, 'name': tag.name} for tag in tags]
 
 class LikeManager(models.Manager):
     def add_vote(self, user, object, new_value):

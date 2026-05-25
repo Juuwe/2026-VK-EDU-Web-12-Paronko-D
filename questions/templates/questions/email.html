@@ -1,0 +1,12 @@
+<div style="font-family: Arial, sans-serif; color: #333;">
+    <h2>Привет, {{ author_name }}!</h2>
+    <p>На ваш вопрос <strong>"{{ question_title }}"</strong> поступил новый ответ от пользователя <em>{{ answer_author }}</em>.</p>
+
+    <div style="padding: 15px; background-color: #f9f9f9; border-left: 4px solid #007bff; margin-bottom: 20px;">
+        {{ answer_text|linebreaks }}
+    </div>
+
+    <a href="{{ question_url }}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+        Посмотреть ответ на сайте
+    </a>
+</div>

@@ -13,6 +13,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+
   db:
     image: postgres:17
     container_name: postgres_db
@@ -60,6 +61,15 @@ services:
     <<: *django-base
     container_name: celery_beat
     command: celery -A application beat -l INFO
+
+  maildev:
+    image: maildev/maildev
+    container_name: maildev_smtp
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - app_network
 
 networks:
   app_network:

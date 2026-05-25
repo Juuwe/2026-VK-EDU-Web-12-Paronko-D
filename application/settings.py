@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+from celery.schedules import crontab
+
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -188,3 +190,25 @@ LOGOUT_REDIRECT_URL = 'login'
 #         },
 #     },
 # }
+
+
+SIDEBAR_CACHE_TTL = 60 * 60 * 24
+CACHE_KEY_POPULAR_TAGS = 'popular_tags_cache'
+CACHE_KEY_BEST_MEMBERS = 'best_members_cache'
+
+CELERY_BEAT_SCHEDULE = {
+    'update-tags-every-hour': {
+        'task': 'core.tasks.update_popular_tags_cache_task',
+        'schedule': crontab(minute=0),
+    },
+    'update-members-every-hour': {
+        'task': 'core.tasks.update_best_members_cache_task',
+        'schedule': crontab(minute=0),
+    },
+}
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 1025))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False') == 'True'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')

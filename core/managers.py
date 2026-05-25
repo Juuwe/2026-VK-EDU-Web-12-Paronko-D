@@ -5,6 +5,10 @@ class ProfileManager(models.Manager):
     def get_best(self, limit=10):
         return self.select_related('user').order_by('-correct_answers_count')[:limit]
 
+    def get_best_for_cache(self, limit=10):
+        profiles = self.get_best(limit=limit)
+        return [{'id': profile.id, 'nickname': profile.nickname} for profile in profiles]
+
     def get_profile_stat(self, user):
         return self.get_queryset().filter(user=user).select_related('user').annotate(
             questions_count=Count('questions', distinct=True),

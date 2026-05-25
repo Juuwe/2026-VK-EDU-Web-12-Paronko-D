@@ -9,5 +9,6 @@ urlpatterns = [
     path('ask/', views.AskQuestionView.as_view(), name='ask'),
     path('question/<int:object_id>/like/', views.QuestionLikeView.as_view(), name='question_like'),
     path('answer/<int:object_id>/like/', views.AnswerLikeView.as_view(), name='answer_like'),
-    path('answer/<int:answer_id>/correct/', views.MarkCorrectView.as_view(), name='mark_correct')
+    path('answer/<int:answer_id>/correct/', views.MarkCorrectView.as_view(), name='mark_correct'),
+    path('api/questions/search/', views.question_search_autocomplete, name='question_search_api'),
 ]

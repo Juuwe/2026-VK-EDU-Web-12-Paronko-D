@@ -8,9 +8,19 @@
 
         {% if user.is_authenticated %}
             <div class="col-12 col-md-8 order-3 order-md-2 px-md-4">
-                <form class="d-flex gap-2">
-                <input type="text" class="form-control" placeholder="Искать вопрос...">
-                <a href="{% url 'ask' %}" class="btn btn-primary">Вопрос!</a>
+                <form class="d-flex gap-2 position-relative" action="" method="get" id="search-form">
+                    <input
+                        type="search"
+                        name="q"
+                        id="search-input"
+                        class="form-control"
+                        placeholder="Искать вопрос..."
+                        autocomplete="off"
+                    >
+
+                    <a href="{% url 'ask' %}" class="btn btn-primary">Вопрос!</a>
+
+                    <ul class="dropdown-menu w-100 position-absolute start-0 mt-5" id="search-results-dropdown"></ul>
                 </form>
             </div>
         {% endif %}
