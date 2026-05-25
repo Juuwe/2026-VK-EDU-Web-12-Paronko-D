@@ -54,13 +54,25 @@ services:
   celery:
     <<: *django-base
     container_name: celery_worker
-    # Запуск воркера. application - это папка, где лежит твой celery.py
     command: celery -A application worker -l INFO
 
   celery-beat:
     <<: *django-base
     container_name: celery_beat
-    command: celery -A application beat -l INFO
+    command: sh -c "rm -f ./celerybeat.pid && celery -A application beat -l INFO"
+
+  centrifugo:
+    image: centrifugo/centrifugo:v5
+    container_name: centrifugo_server
+    volumes:
+      - ./centrifugo:/centrifugo
+    env_file:
+      - .env.docker
+    command: centrifugo -c /centrifugo/config.json
+    ports:
+      - "8001:8000"
+    networks:
+      - app_network
 
   maildev:
     image: maildev/maildev
@@ -70,6 +82,7 @@ services:
       - "1025:1025"
     networks:
       - app_network
+
 
 networks:
   app_network:

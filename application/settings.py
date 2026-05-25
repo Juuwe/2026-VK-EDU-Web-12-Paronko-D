@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'questions.apps.QuestionsConfig',
+    'django.contrib.postgres',
     'core'
 ]
 
@@ -116,6 +117,7 @@ CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_BEAT_DB}"
 
 CELERY_BEAT_SCHEDULER = "redbeat.RedBeatScheduler"
 CELERY_REDBEAT_REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_BEAT_DB}"
+REDBEAT_AUTODISCOVER = True
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -207,8 +209,15 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
+REDBEAT_LOCK_TIMEOUT = 180
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', 1025))
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False') == 'True'
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+
+CENTRIFUGO_TOKEN_SECRET = os.environ.get('CENTRIFUGO_TOKEN_HMAC_SECRET_KEY', '')
+CENTRIFUGO_API_KEY = os.environ.get('CENTRIFUGO_API_KEY', '')
+CENTRIFUGO_API_URL = "http://centrifugo:8000/api"
+CENTRIFUGO_WS_URL = "ws://localhost:8001/connection/websocket"

@@ -5,7 +5,12 @@ from . import validators
 from django.urls import reverse
 
 from django.contrib.postgres.indexes import GinIndex
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import SearchVector, SearchVectorField
+from django.db.models import GeneratedField
+
+from django.db.models import Q
+import math
+
 
 class Tag(models.Model):
     objects = TagManager()
@@ -33,6 +38,12 @@ class Question(models.Model):
     created_at = models.DateTimeField(verbose_name="Дата и время создания", default=timezone.now, db_index=True)
     tags = models.ManyToManyField("questions.Tag", verbose_name="Теги вопроса", related_name="questions")
 
+    search_vector = GeneratedField(
+        expression=SearchVector('title', 'content', config='simple'),
+        output_field=SearchVectorField(),
+        db_persist=True,
+    )
+
     class Meta:
         verbose_name = "Вопрос"
         verbose_name_plural = "Вопросы"
@@ -40,11 +51,7 @@ class Question(models.Model):
         ordering = ['-created_at']
 
         indexes = [
-            GinIndex(
-                name='question_search_gin_idx',
-                fields=['title', 'text'],
-                opclasses=['gin_trgm_ops', 'gin_trgm_ops']  # Требуется расширение pg_trgm
-            )
+            GinIndex(fields=['search_vector'], name='question_fts_idx')
         ]
 
     def __str__(self):
@@ -52,7 +59,6 @@ class Question(models.Model):
 
     def clean(self):
         super().clean()
-
         if not self.author:
             return
 
@@ -64,6 +70,15 @@ class Question(models.Model):
 
     def get_absolute_url(self):
         return reverse('question', kwargs={'pk': self.pk})
+
+    def get_answer_page(self, answer, per_page):
+        position = self.answers.filter(
+            Q(is_correct=True) |
+            Q(is_correct=False, rating__gt=0) |
+            Q(is_correct=False, rating=0, created_at__lte=answer.created_at)
+        ).count()
+
+        return math.ceil(position / per_page) or 1
 
 class Answer(models.Model):
     objects = AnswerManager()
@@ -147,6 +162,7 @@ class QuestionLike(Like):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
 
 
 class AnswerLike(Like):

@@ -6,8 +6,10 @@ from django.utils.html import strip_tags
 from django.conf import settings
 from .models import Answer
 
+from cent import Client, PublishRequest
+
 @shared_task(bind=True, autoretry_for=(smtplib.SMTPException,), max_retries=3, retry_backoff=True)
-def send_new_answer_notification_task(self, answer_id, base_url):
+def send_new_answer_notification_task(self, answer_id, base_url, answer_path):
     try:
         answer = Answer.objects.select_related('question__author__user', 'author__user').get(id=answer_id)
     except Answer.DoesNotExist:
@@ -27,7 +29,7 @@ def send_new_answer_notification_task(self, answer_id, base_url):
         'question_title': question.title,
         'answer_author': answer.author.nickname,
         'answer_text': answer.content,
-        'question_url': f"{base_url}{question.get_absolute_url()}"
+        'question_url': f"{base_url}{answer_path}"
     }
 
     html_message = render_to_string('questions/email.html', context)
@@ -43,3 +45,26 @@ def send_new_answer_notification_task(self, answer_id, base_url):
     )
 
     return f"Письмо успешно отправлено на {question_author.user.email}"
+
+@shared_task
+def notify_centrifugo_new_answer(question_id, author_name, html_template, target_page):
+    client = Client(
+        settings.CENTRIFUGO_API_URL,
+        api_key=settings.CENTRIFUGO_API_KEY,
+        timeout=5
+    )
+
+    channel = f"questions:{question_id}"
+
+    payload = {
+        "author": author_name,
+        "html_template": html_template,
+        "target_page": target_page
+    }
+
+    try:
+        request = PublishRequest(channel=channel, data=payload)
+        client.publish(request)
+    except Exception as e:
+        print(f"ОШИБКА CENTRIFUGO: {e}")
+        raise e

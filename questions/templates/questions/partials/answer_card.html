@@ -14,8 +14,8 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
             {% include 'questions/partials/like_widget.html' with obj=answer obj_type="answer" %}
 
-            {% if user.is_authenticated and user.profile == question.author %}
-                <div class="js-correct-container form-check" data-id="{{ answer.pk }}">
+            {% if user.is_authenticated and user.profile == question.author or is_websocket %}
+                <div class="js-correct-container form-check {% if is_websocket and request.user != answer.question.author %}d-none{% endif %}" data-id="{{ answer.pk }}" data-ws-checkbox="true">
                     <input class="js-correct-input form-check-input"
                         type="checkbox"
                         {% if answer.is_correct %}checked{% endif %}

@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!searchInput || !searchDropdown) return;
 
+    let currentAbortController = null;
+
     const debounce = (fn, delay = 300) => {
         let timeoutId;
         return (...args) => {
@@ -18,8 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (currentAbortController) {
+            currentAbortController.abort();
+        }
+
+        currentAbortController = new AbortController();
+        const signal = currentAbortController.signal;
+
         try {
-            const response = await fetch(`/api/questions/search/?q=${encodeURIComponent(query)}`);
+            const response = await fetch(`/api/questions/search/?q=${encodeURIComponent(query)}`, { signal });
             if (!response.ok) throw new Error('Ошибка сети');
 
             const data = await response.json();
@@ -41,6 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
             searchDropdown.classList.add('show');
 
         } catch (error) {
+            if (error.name === 'AbortError') {
+                return;
+            }
+            
             console.error('Ошибка поиска:', error);
         }
     };

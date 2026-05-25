@@ -1,16 +1,19 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.generic import View, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import  SearchQuery
+import re
+from django.conf import settings
+from django.template.loader import render_to_string
+
+from .utils import get_centrifugo_token
 
 from .models import Question, QuestionLike, AnswerLike, Answer
 from .forms import AskForm, AnswerForm
-import math
 from django.http import JsonResponse
 
-from .tasks import send_new_answer_notification_task
+from .tasks import send_new_answer_notification_task, notify_centrifugo_new_answer
 
 
 
@@ -81,7 +84,9 @@ class DetailQuestionView(DetailView):
 
         context.update({
             'page_obj': page_obj,
-            'answers': page_obj.object_list
+            'answers': page_obj.object_list,
+            'centrifugo_token': get_centrifugo_token(self.request.user.id if self.request.user.is_authenticated else None),
+            'centrifugo_ws_url': settings.CENTRIFUGO_WS_URL,
         })
 
         if 'form' not in context:
@@ -95,25 +100,41 @@ class DetailQuestionView(DetailView):
         if not request.user.is_authenticated:
             return redirect('login')
 
+        self.object = self.get_object()
         form = AnswerForm(request.POST, user=request.user, question=self.object)
 
         if form.is_valid():
             new_answer = form.save()
+            target_page = self.object.get_answer_page(new_answer, self.per_page)
 
-            position = self.object.answers.filter(
-                Q(is_correct=True) |
-                Q(is_correct=False, rating__gt=0) |
-                Q(is_correct=False, rating=0, created_at__lte=new_answer.created_at)
-            ).count()
+            self._send_notifications(request, new_answer, target_page)
 
-            target_page = math.ceil(position / self.per_page) or 1
-
-            base_url = f"{request.scheme}://{request.get_host()}"
-            send_new_answer_notification_task.delay(answer_id=new_answer.id, base_url=base_url)
-
-            return redirect(f'{self.object.get_absolute_url()}?page={target_page}#answer-{new_answer.id}')
+            answer_path = f"{self.object.get_absolute_url()}?page={target_page}#answer-{new_answer.id}"
+            return redirect(answer_path)
 
         return self.render_to_response(self.get_context_data(form=form))
+
+    def _send_notifications(self, request, answer, target_page):
+        answer_html = render_to_string(
+            'questions/partials/answer_card.html',
+            {'answer': answer,
+             'is_websocket': True},
+            request=request
+        )
+        notify_centrifugo_new_answer.delay(
+            question_id=self.object.id,
+            author_name=request.user.profile.nickname,
+            html_template=answer_html,
+            target_page=target_page
+        )
+
+        base_url = f"{request.scheme}://{request.get_host()}"
+        answer_path = f"{self.object.get_absolute_url()}?page={target_page}#answer-{answer.id}"
+        send_new_answer_notification_task.delay(
+            answer_id=answer.id,
+            base_url=base_url,
+            answer_path=answer_path
+        )
 
 class AskQuestionView(LoginRequiredMixin, CreateView):
     model = Question
@@ -176,14 +197,21 @@ def question_search_autocomplete(request):
     if len(query_text) < 2:
         return JsonResponse({'results': []})
 
-    vector = SearchVector('title', weight='A', config='russian') + \
-             SearchVector('text', weight='B', config='russian')
+    clean_words = re.sub(r'[^\w\s]', '', query_text).split()
+    if not clean_words:
+        return JsonResponse({'results': []})
 
-    query = SearchQuery(query_text, config='russian')
+    clean_words[-1] += ':*'
+    raw_query = ' & '.join(clean_words)
 
-    questions = Question.objects.annotate(
-        rank=SearchRank(vector, query)
-    ).filter(rank__gte=0.03).order_by('-rank')[:5]
+    query = SearchQuery(raw_query, config='simple', search_type='raw')
+
+    questions = Question.objects.filter(
+        search_vector=query
+    ).only('id', 'title')[:10]
+
+    if not questions:
+        return JsonResponse({'results': []})
 
     results = [
         {

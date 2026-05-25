@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+
+{% load static %}
 {% load pagination %}
 
 {% block title %}
@@ -13,11 +15,13 @@
 
     <h4 class="mb-4">Ответы ({{ page_obj.paginator.count }})</h4>
 
-    <div class="d-flex flex-column gap-3 mb-5">
+    <div id="answers-list" class="d-flex flex-column gap-3 mb-5">
         {% for answer in answers %}
             {% include 'questions/partials/answer_card.html' %}
         {% empty %}
-            <p class="text-muted">Пока нет ни одного ответа к этому вопросу</p>
+            <div id="no-answers-stub" class="alert alert-info">
+                Пока нет ни одного ответа к этому вопросу
+            </div>
         {% endfor %}
     </div>
 
@@ -45,4 +49,19 @@
 {% if page_obj.paginator.num_pages > 1 %}
     {% show_pagination page_obj on_each_side=2 on_ends=1 %}
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<div id="centrifugo-config"
+     style="display: none;"
+     data-ws-url="{{ centrifugo_ws_url }}"
+     data-token="{{ centrifugo_token }}"
+     data-channel="questions:{{ object.id }}"
+     data-current-page="{% if page_obj %}{{ page_obj.number }}{% else %}1{% endif %}"
+     data-current-user="{% if request.user.is_authenticated %}{{ request.user.profile.nickname }}{% endif %}"
+     data-question-author="{{ object.author.nickname }}">
+</div>
+
+<script src="https://unpkg.com/centrifuge@5.0.1/dist/centrifuge.js"></script>
+<script src="{% static 'js/centrifugo_answers.js' %}"></script>
 {% endblock %}

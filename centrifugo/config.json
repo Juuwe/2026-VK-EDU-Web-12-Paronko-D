@@ -1,0 +1,16 @@
+{
+  "admin": true,
+  "admin_cookie_same_site": "lax",
+  "allowed_origins": [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://localhost:8001",
+    "http://127.0.0.1:8001"
+  ],
+  "namespaces": [
+    {
+      "name": "questions",
+      "allow_subscribe_for_client": true
+    }
+  ]
+}

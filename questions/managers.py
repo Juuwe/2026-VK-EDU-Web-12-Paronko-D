@@ -1,8 +1,10 @@
 from django.db import models
-from django.db.models import F, Case, When, Value
+from django.db.models import F, Value, Count
 
-from django.db.models import Subquery, OuterRef, Value, IntegerField
+from django.db.models import Subquery, OuterRef, IntegerField
 from django.db.models.functions import Coalesce
+from django.utils import timezone
+from datetime import timedelta
 
 class QuestionQuerySet(models.QuerySet):
     def with_user_vote(self, user):
@@ -86,8 +88,13 @@ class TagManager(models.Manager):
         return self.order_by('-questions_count')[:limit]
 
     def get_popular_for_cache(self, limit=20):
-        tags = self.popular(limit=limit)
-        return [{'id': tag.id, 'name': tag.name} for tag in tags]
+        three_months_ago = timezone.now() - timedelta(days=90)
+
+        return self.filter(
+            questions__created_at__gte=three_months_ago
+        ).annotate(
+            recent_questions_count=Count('questions')
+        ).order_by('-recent_questions_count')[:10]
 
 class LikeManager(models.Manager):
     def add_vote(self, user, object, new_value):

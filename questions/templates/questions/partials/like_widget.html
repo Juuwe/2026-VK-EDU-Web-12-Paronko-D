@@ -2,7 +2,7 @@
      data-id="{{ obj.pk }}"
      data-type="{{ obj_type }}">
 
-    <span class="js-rating-value fw-bold small px-2">{{ obj.rating }}</span>
+    <span class="js-rating-value fw-bold small px-2" data-rating="{{ obj.rating }}">{{ obj.rating }}</span>
 
     <div class="d-flex flex-column">
         <button class="js-vote-btn btn btn-sm btn-link text-dark p-0 m-0 lh-1"

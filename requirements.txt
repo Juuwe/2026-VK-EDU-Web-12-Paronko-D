@@ -12,4 +12,5 @@ redis
 django-redis
 redbeat
 
-pycent
+PyJWT==2.8.0
+cent==5.0.0
