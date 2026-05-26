@@ -208,6 +208,7 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 REDBEAT_LOCK_TIMEOUT = 180
+REDBEAT_LOCK_STAT = 10
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
@@ -219,3 +220,5 @@ CENTRIFUGO_TOKEN_SECRET = os.environ.get('CENTRIFUGO_TOKEN_HMAC_SECRET_KEY', '')
 CENTRIFUGO_API_KEY = os.environ.get('CENTRIFUGO_API_KEY', '')
 CENTRIFUGO_API_URL = "http://centrifugo:8000/api"
 CENTRIFUGO_WS_URL = "ws://localhost:8001/connection/websocket"
+
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True

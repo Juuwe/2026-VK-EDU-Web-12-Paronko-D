@@ -68,7 +68,8 @@ services:
     <<: *django-base
     container_name: celery_beat
     command: sh -c "rm -f ./celerybeat.pid && celery -A application beat -l INFO"
-
+    restart: unless-stopped
+    
   centrifugo:
     image: centrifugo/centrifugo:v5
     container_name: centrifugo_server
