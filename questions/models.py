@@ -3,8 +3,9 @@ from django.db import models
 
 from .managers import QuestionQuerySet, AnswerManager, TagManager, LikeManager
 from . import validators
-from django.db.models import F
+from django.db.models import F, Q
 from django.urls import reverse
+import math
 
 class Tag(models.Model):
     objects = TagManager()
@@ -55,6 +56,15 @@ class Question(models.Model):
 
     def get_absolute_url(self):
         return reverse('question', kwargs={'pk': self.pk})
+
+    def get_answer_page(self, answer, per_page):
+        position = self.answers.filter(
+            Q(is_correct=True) |
+            Q(is_correct=False, rating__gt=0) |
+            Q(is_correct=False, rating=0, created_at__lte=answer.created_at)
+        ).count()
+
+        return math.ceil(position / per_page) or 1
 
 
 class Answer(models.Model):
