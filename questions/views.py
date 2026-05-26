@@ -68,7 +68,7 @@ class DetailQuestionView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        answers_queryset = self.object.answers.all().select_related('author')
+        answers_queryset = self.object.answers.best().select_related('author')
         page_obj = paginate(answers_queryset, self.request, per_page=self.per_page)
         context['page_obj'] = page_obj
 
