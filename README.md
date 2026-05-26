@@ -22,11 +22,15 @@
    **При отсутствии .env.local все команды django должны выполняться только внутри контейнера**
 
    #### Локальный запуск:
+   `python3 -m venv .venv` \
+   `source .venv/bin/activate` \
    `pip install -r requirements.txt` \
    Запустите PostgreSQL локально или с помощью Docker: `docker compose up -d db` \
-   Запустите веб-сервер:
+   Запустите веб-сервер: \
+   `ENV_FILE=.env.local python manage.py migrate` \
    `ENV_FILE=.env.local python manage.py runserver`
-
+   Создание администратора: \
+    `ENV_FILE=.env.local python manage.py createsuperuser`
 6. **Наполнение данными:** \
    **(Процесс наполнения данными может занять более 4 минут)**
 
