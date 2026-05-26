@@ -50,7 +50,7 @@ class AnswerQuerySet(models.QuerySet):
         )
 
     def best(self):
-        return self.order_by('-is_correct', '-rating', '-created_at')
+        return self.order_by('-is_correct', '-rating', 'created_at')
 
 class AnswerManager(models.Manager):
     def get_queryset(self):
