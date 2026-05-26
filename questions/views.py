@@ -93,9 +93,10 @@ class DetailQuestionView(DetailView):
         if form.is_valid():
             new_answer = form.save()
 
-            last_page = math.ceil(self.object.answers.count() / self.per_page)
+            target_page = self.object.get_answer_page(new_answer, self.per_page)
 
-            return redirect(f'{self.object.get_absolute_url()}?page={last_page}#answer-{new_answer.id}')
+            answer_path = f"{self.object.get_absolute_url()}?page={target_page}#answer-{new_answer.id}"
+            return redirect(answer_path)
 
         return self.render_to_response(self.get_context_data(form=form))
 

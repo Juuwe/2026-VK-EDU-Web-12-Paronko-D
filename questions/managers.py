@@ -9,7 +9,7 @@ class QuestionManager(models.Manager):
 
 class AnswerManager(models.Manager):
     def best(self):
-        return self.order_by('-is_corect', '-rating', '-created_at')
+        return self.order_by('-is_corect', '-rating', 'created_at')
 
 class TagManager(models.Manager):
     def popular(self, limit=20):
